@@ -1,0 +1,1411 @@
+version 06b
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EliteDangerous - Offline Keybinder (de)</title>
+    <style>
+        /* ========================================
+           GRUNDLEGENDE STILE UND RESETS
+        ======================================== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* ========================================
+           BODY STYLING
+        ======================================== */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ========================================
+           HEADER BEREICH
+        ======================================== */
+        .header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            color: #c65d0c;
+            text-shadow: 0 0 10px rgba(255, 100, 0, 0.5);
+            margin-bottom: 10px;
+        }
+        
+        .header h2, .header h3, .header h4 {
+            margin-bottom: 15px;
+            font-weight: normal;
+        }
+
+        .header a {
+            color: #ff6600;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .header a:hover {
+            color: #fff;
+        }
+
+        .discord-link:link,
+        .discord-link:visited {
+            color: rgb(2, 171, 255);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .discord-link:hover,
+        .discord-link:active {
+            color: white;
+        }
+
+        /* ========================================
+           LAUFTEXT CONTAINER
+        ======================================== */
+        .scrolling-text-container {
+            width: 90%;
+            max-width: 1600px;
+            overflow: hidden;
+            background-color: #1d1c1c;
+            padding: 10px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            border: 6px solid #333;
+            border-radius: 10px;
+            filter: blur(0.2px);
+        }
+
+        .scrolling-text {
+            display: inline-block;
+            white-space: nowrap; 
+            color: #e76908;
+            font-size: 1.5rem;
+            animation: scroll-immediate 120s linear infinite;
+        }
+
+        @keyframes scroll-immediate {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* ========================================
+           STEUERUNGS-BUTTONS
+        ======================================== */
+        .controls {
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        /* Allgemeiner Button-Stil */
+        .btn {
+            background: linear-gradient(135deg, #fe5a02 0%, #211605 100%);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 40px rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 40px rgba(254, 253, 253, 0.4);
+        }
+
+        /* Spezielle Button-Stile */
+        .btn-load {
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            box-shadow: 0 4px 40px rgba(76, 175, 80, 0.3);
+        }
+
+        .btn-load:hover {
+            box-shadow: 0 6px 50px rgba(76, 175, 80, 0.6);
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #2196F3 0%, #1565C0 100%);
+            box-shadow: 0 4px 40px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-download:hover {
+            box-shadow: 0 6px 50px rgba(33, 150, 243, 0.6);
+        }
+
+        .btn-reset {
+            background: linear-gradient(135deg, #FF5722 0%, #D32F2F 100%);
+            box-shadow: 0 4px 40px rgba(255, 87, 34, 0.3);
+        }
+
+        .btn-reset:hover {
+            box-shadow: 0 6px 50px rgba(255, 87, 34, 0.6);
+        }
+
+        .btn-template {
+            background: linear-gradient(135deg, #9C27B0 0%, #7B1FA2 100%);
+            box-shadow: 0 4px 40px rgba(156, 39, 176, 0.3);
+        }
+
+        .btn-template:hover {
+            box-shadow: 0 6px 50px rgba(156, 39, 176, 0.6);
+        }
+
+        /* Sound-Button */
+        #toggle-sound-btn {
+            background: linear-gradient(135deg, #4CAF50 0%, #02130a 100%);
+            box-shadow: 0 4px 40px rgba(4, 249, 13, 0.3);
+        }
+
+        #toggle-sound-btn:hover {
+            box-shadow: 0 6px 50px rgba(255, 255, 255, 0.4);
+        }
+
+        #toggle-sound-btn.paused {
+            background: linear-gradient(135deg, #ff6b6b 0%, #320604 100%);
+            box-shadow: 0 4px 40px rgba(255, 107, 107, 0.3);
+        }
+
+        /* Datei-Upload-Button */
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-block;
+            background: linear-gradient(135deg, #4CAF50 0%, #2E7D32 100%);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 40px rgba(76, 175, 80, 0.3);
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 50px rgba(76, 175, 80, 0.6);
+        }
+
+        /* ========================================
+           HAUPTCONTAINER FÜR BINDINGS
+        ======================================== */
+        .container {
+            padding: 20px;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Suchfeld */
+        .search-box {
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto 20px;
+            padding: 12px;
+            background: rgba(253, 89, 0, 0.1);
+            border: 5px solid rgba(0, 0, 0, 0.3);
+            color: #fff;
+            border-radius: 8px;
+            font-size: 16px;
+            display: block;
+        }
+
+        .search-box::placeholder {
+            color: #ccc;
+        }
+
+        /* Grid für Kategorien */
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .category {
+            background: rgba(202, 93, 4, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .category h3 {
+            color: #ff8000;
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+            border-bottom: 2px solid #ff8000;
+            padding-bottom: 8px;
+        }
+
+        .binding-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            border-left: 3px solid #ff8000;
+        }
+
+        .binding-label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #fff;
+            display: block;
+        }
+
+        .device-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .device-group {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .device-group label {
+            display: block;
+            font-size: 0.9rem;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #ff8000;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+        }
+        
+        .duplicate-highlight {
+            background-color: rgba(255, 71, 87, 0.3) !important;
+            border-color: #ff4757 !important;
+        }
+
+        /* ========================================
+           TASTATUR-SCHABLONE
+        ======================================== */
+        .template-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .template-container {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 95vw;
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .template-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .template-header h2 {
+            color: #ff8000;
+            margin-bottom: 10px;
+        }
+
+        .keyboard-template {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        .keyboard-row {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+
+        .key-button {
+            min-width: 40px;
+            min-height: 40px;
+            background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
+            border: 2px solid #7f8c8d;
+            color: #ecf0f1;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            padding: 2px;
+        }
+
+        .key-button:hover {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            transform: translateY(-1px);
+        }
+
+        .key-button.assigned {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-color: #e74c3c;
+        }
+
+        .key-button .key-label {
+            font-weight: bold;
+            font-size: 11px;
+        }
+
+        .key-button .key-function {
+            font-size: 8px;
+            color: #bdc3c7;
+            text-align: center;
+            margin-top: 2px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .key-space {
+            min-width: 200px;
+        }
+
+        .key-enter, .key-shift, .key-ctrl, .key-alt {
+            min-width: 60px;
+        }
+
+        .key-tab {
+            min-width: 60px;
+        }
+
+        .key-caps {
+            min-width: 70px;
+        }
+
+        .close-template {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .close-template:hover {
+            background: #c0392b;
+        }
+
+        /* ========================================
+           FEHLER-DIALOG
+        ======================================== */
+        .error-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .error-dialog {
+            background: linear-gradient(135deg, #ff4757 0%, #c44569 100%);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .error-dialog h3 {
+            margin-bottom: 15px;
+            font-size: 1.5rem;
+        }
+
+        .error-dialog p {
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .error-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ff3742 0%, #c44569 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffa726 0%, #fb8c00 100%);
+        }
+
+        /* ========================================
+           RESPONSIVE DESIGN
+        ======================================== */
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn, .file-label {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .keyboard-template {
+                font-size: 10px;
+            }
+            
+            .key-button {
+                min-width: 30px;
+                min-height: 30px;
+                font-size: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         AUDIO ELEMENT Thanks Anya
+    ======================================== -->
+    <audio id="background-music" loop preload="auto">
+        <source src="https://ia803407.us.archive.org/12/items/tchaikovsky-klavierkonzert-nr.-1-ivo-pogorelich-claudio-abbado/DG%20415%20122-1%E2%80%A2f1.mp3" type="audio/mp3">
+        Dein Browser unterstützt das Audio-Element nicht.
+    </audio>
+    
+    <!-- ========================================
+         HEADER BEREICH
+    ======================================== -->
+    <div class="header">
+        <h1><u>EliteDangerous - OfflineKeybinder</u></h1>
+        <h2><p style="color: rgb(6, 254, 2);">Konfigurieren Sie Ihre Tastenbelegungen für Maus, Tastatur und Joysticks.</p></h2>
+        <h4>
+            <p>Ursprünglicher Pfad: C:\Users\DeinBenutzername\AppData\Local\Frontier Developments\Elite Dangerous\Options\Bindings\ (z.B. Custom.4.binds)</p>
+            <p>Diese Testversion speichert die neue Datei als "Test.binds" in Ihren Download-Ordner. Benennen Sie diese bei Bedarf um und ersetzen Sie die Originaldatei.</p>
+        </h4>
+        <h3><p style="color: rgb(255, 242, 5);">!!! Wichtiger Hinweis: Erstellen Sie vor dem Ersetzen eine Sicherungskopie Ihrer Originaldatei !!!</p></h3>
+        <br>
+        <a href="https://discord.gg/dein-einladungscode" target="_blank" class="discord-link">
+            Klick-&gt;Discord: -K.I.N.D.E.R.S.- CORP (Eine deutschsprachige Elite Dangerous Community)
+        </a>
+        <br>
+        <a href="https://discord.gg/x2ShF954AN" target="_blank" class="discord-link">
+            Klick-&gt;Discord: Hut &amp; Kraga Kompendium (Alles rund um Hard &amp; Software)
+        </a>
+    </div>
+
+    <!-- ========================================
+         LAUFTEXT
+    ======================================== -->
+    <div class="scrolling-text-container">
+        <p class="scrolling-text">...................................................................................................................................................................................................................................................................................................................⌨️🖱️🖲️🕹️...Elite.Dangerous.Offline.Keybinder.............................(w) by Beilrais 2025, Version 0.6b – Bekannte Probleme: Perfekte Struktur und Anordnung der Eingabenansicht; Manche Übersetzungen der Eingaben beim Laden ins Deutsche; Fehlende Buttons für UI in Multilanguage; Doppelte Tastenbelegung wird erfolgreich erkannt, aber oftmals nicht richtig zugeordnet; Button „Schablone" funktioniert nun, aber Zeigt nur Tastatur an. Schwerpunkt liegt bei den Hotas kommt vielleicht schon mit dem nächsten Update 0.8.....– Viel Spaß beim Einstellen!..... Achtung: Manche Features arbeiten so zuverlässig wie ein Kaffeekochen am Montagmorgen, aber keine Sorge, wir haben das im Blick. Wenn der Bildschirm plötzlich tanzt oder die Tasten ihren eigenen Weg gehen, einfach tief durchatmen und auf „OK" klicken. Wir wissen, es ist chaotisch, aber wer will schon langweilige Software? Viel Spaß und möge der Bugfix bei dir sein! ✨.......Besten Dank an: Uncovered, Commander Anya🌶️, die aus dem Spaghetticode doch was halbwegs vernünftiges gemacht haben.❤️</p>
+    </div>
+    <br>
+
+    <!-- ========================================
+         STEUERUNGS-BUTTONS
+    ======================================== -->
+    <div class="controls">
+        <label for="fileInput" class="file-label btn-load">📁 <strong>Binding Datei laden</strong></label>
+        <input type="file" id="fileInput" class="file-input" accept=".binds" />
+        
+        <button class="btn btn-download" onclick="saveConfig()">💾 <strong>Test.binds herunterladen</strong></button>
+        
+        <button class="btn btn-reset" onclick="resetConfig()">🔄 <strong>Zurücksetzen</strong></button>
+        
+        <button class="btn btn-template" onclick="showTemplate()">⌨️ <strong>Schablone anzeigen</strong></button>
+        
+        <button class="btn" id="toggle-sound-btn">🎵 <strong>Musik: Ein/Aus</strong></button>
+    </div>
+
+    <!-- ========================================
+         HAUPTCONTAINER
+    ======================================== -->
+    <div class="container">
+        <input type="text" class="search-box" id="searchBox" placeholder="Suche nach Funktionen..." oninput="filterBindings()">
+        <div id="categories" class="categories"></div>
+    </div>
+
+    <!-- ========================================
+         TASTATUR-SCHABLONE OVERLAY
+    ======================================== -->
+    <div class="template-overlay" id="templateOverlay">
+        <div class="template-container">
+            <button class="close-template" onclick="closeTemplate()">✕</button>
+            <div class="template-header">
+                <h2>Tastatur-Schablone</h2>
+                <p>Rote Tasten sind belegt. Hover für Details.</p>
+            </div>
+            <div class="keyboard-template" id="keyboardTemplate">
+                <!-- Keyboard wird hier durch JavaScript generiert -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================
+         FEHLER-DIALOG
+    ======================================== -->
+    <div class="error-overlay" id="errorOverlay">
+        <div class="error-dialog">
+            <h3>Doppelte Tastenbelegung erkannt!</h3>
+            <p id="errorMessage"></p>
+            <div class="error-buttons">
+                <button class="btn btn-danger" onclick="resolveDuplicate(false)"><strong>Überspringen</strong></button>
+                <button class="btn btn-warning" onclick="resolveDuplicate(true)"><strong>Ersetzen</strong></button>
+                <button class="btn" onclick="closeError()"><strong>Abbrechen</strong></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ========================================
+           GLOBALE VARIABLEN
+        ======================================== */
+        let currentConfig = {};
+        let categories = {};
+        let duplicateContext = null;
+        let keyBindings = new Map();
+        let musicPlaying = false;
+        let audioContext = null;
+
+        const deviceTypes = {
+            keyboard: 'Tastatur',
+            mouse: 'Maus',
+            gamepad1: 'Joystick 1',
+            gamepad2: 'Joystick 2'
+        };
+
+        /* ========================================
+           KEY MAPPING FÜR DEUTSCHE ÜBERSETZUNG
+        ======================================== */
+        const keyMapping = {
+            'Key_A': 'A', 'Key_B': 'B', 'Key_C': 'C', 'Key_D': 'D', 'Key_E': 'E',
+            'Key_F': 'F', 'Key_G': 'G', 'Key_H': 'H', 'Key_I': 'I', 'Key_J': 'J',
+            'Key_K': 'K', 'Key_L': 'L', 'Key_M': 'M', 'Key_N': 'N', 'Key_O': 'O',
+            'Key_P': 'P', 'Key_Q': 'Q', 'Key_R': 'R', 'Key_S': 'S', 'Key_T': 'T',
+            'Key_U': 'U', 'Key_V': 'V', 'Key_W': 'W', 'Key_X': 'X', 'Key_Y': 'Y',
+            'Key_Z': 'Z', 'Key_Space': 'Leertaste', 'Key_Enter': 'Enter',
+            'Key_Escape': 'Escape', 'Key_Tab': 'Tab', 'Key_LeftShift': 'Linke Shift',
+            'Key_RightShift': 'Rechte Shift', 'Key_LeftControl': 'Linke Strg',
+            'Key_RightControl': 'Rechte Strg', 'Key_LeftAlt': 'Linke Alt',
+            'Key_RightAlt': 'Rechte Alt', 'Mouse_1': 'Linke Maustaste',
+            'Mouse_2': 'Rechte Maustaste', 'Mouse_3': 'Mittlere Maustaste',
+            'Key_UpArrow': 'Pfeil Oben', 'Key_DownArrow': 'Pfeil Unten',
+            'Key_LeftArrow': 'Pfeil Links', 'Key_RightArrow': 'Pfeil Rechts',
+            'Key_PageUp': 'Bild Oben', 'Key_PageDown': 'Bild Unten',
+            'Key_Home': 'Pos1', 'Key_End': 'Ende', 'Key_Insert': 'Einfg',
+            'Key_Delete': 'Entf', 'Key_Backspace': 'Rückschritt',
+            'Key_1': '1', 'Key_2': '2', 'Key_3': '3', 'Key_4': '4', 'Key_5': '5',
+            'Key_6': '6', 'Key_7': '7', 'Key_8': '8', 'Key_9': '9', 'Key_0': '0'
+        };
+
+        /* ========================================
+           TASTATUR LAYOUT FÜR SCHABLONE
+        ======================================== */
+        const keyboardLayout = [
+            [
+                { key: 'Key_Escape', label: 'ESC' },
+                null, null, null,
+                { key: 'Key_F1', label: 'F1' },
+                { key: 'Key_F2', label: 'F2' },
+                { key: 'Key_F3', label: 'F3' },
+                { key: 'Key_F4', label: 'F4' },
+                null,
+                { key: 'Key_F5', label: 'F5' },
+                { key: 'Key_F6', label: 'F6' },
+                { key: 'Key_F7', label: 'F7' },
+                { key: 'Key_F8', label: 'F8' },
+                null,
+                { key: 'Key_F9', label: 'F9' },
+                { key: 'Key_F10', label: 'F10' },
+                { key: 'Key_F11', label: 'F11' },
+                { key: 'Key_F12', label: 'F12' }
+            ],
+            [],
+            [
+                { key: 'Key_Grave', label: '^' },
+                { key: 'Key_1', label: '1' },
+                { key: 'Key_2', label: '2' },
+                { key: 'Key_3', label: '3' },
+                { key: 'Key_4', label: '4' },
+                { key: 'Key_5', label: '5' },
+                { key: 'Key_6', label: '6' },
+                { key: 'Key_7', label: '7' },
+                { key: 'Key_8', label: '8' },
+                { key: 'Key_9', label: '9' },
+                { key: 'Key_0', label: '0' },
+                { key: 'Key_Minus', label: 'ß' },
+                { key: 'Key_Equals', label: '´' },
+                { key: 'Key_Backspace', label: '⌫', class: 'key-shift' }
+            ],
+            [
+                { key: 'Key_Tab', label: 'Tab', class: 'key-tab' },
+                { key: 'Key_Q', label: 'Q' },
+                { key: 'Key_W', label: 'W' },
+                { key: 'Key_E', label: 'E' },
+                { key: 'Key_R', label: 'R' },
+                { key: 'Key_T', label: 'T' },
+                { key: 'Key_Z', label: 'Z' },
+                { key: 'Key_U', label: 'U' },
+                { key: 'Key_I', label: 'I' },
+                { key: 'Key_O', label: 'O' },
+                { key: 'Key_P', label: 'P' },
+                { key: 'Key_LeftBracket', label: 'Ü' },
+                { key: 'Key_RightBracket', label: '+' },
+                { key: 'Key_Enter', label: '↵', class: 'key-enter' }
+            ],
+            [
+                { key: 'Key_CapsLock', label: 'Caps', class: 'key-caps' },
+                { key: 'Key_A', label: 'A' },
+                { key: 'Key_S', label: 'S' },
+                { key: 'Key_D', label: 'D' },
+                { key: 'Key_F', label: 'F' },
+                { key: 'Key_G', label: 'G' },
+                { key: 'Key_H', label: 'H' },
+                { key: 'Key_J', label: 'J' },
+                { key: 'Key_K', label: 'K' },
+                { key: 'Key_L', label: 'L' },
+                { key: 'Key_Semicolon', label: 'Ö' },
+                { key: 'Key_Apostrophe', label: 'Ä' },
+                { key: 'Key_BackSlash', label: '#' }
+            ],
+            [
+                { key: 'Key_LeftShift', label: '⇧', class: 'key-shift' },
+                { key: 'Key_BackSlash2', label: '<' },
+                { key: 'Key_Y', label: 'Y' },
+                { key: 'Key_X', label: 'X' },
+                { key: 'Key_C', label: 'C' },
+                { key: 'Key_V', label: 'V' },
+                { key: 'Key_B', label: 'B' },
+                { key: 'Key_N', label: 'N' },
+                { key: 'Key_M', label: 'M' },
+                { key: 'Key_Comma', label: ',' },
+                { key: 'Key_Period', label: '.' },
+                { key: 'Key_Slash', label: '-' },
+                { key: 'Key_RightShift', label: '⇧', class: 'key-shift' }
+            ],
+            [
+                { key: 'Key_LeftControl', label: 'Strg', class: 'key-ctrl' },
+                { key: 'Key_LeftWin', label: '⊞', class: 'key-ctrl' },
+                { key: 'Key_LeftAlt', label: 'Alt', class: 'key-alt' },
+                { key: 'Key_Space', label: 'Leertaste', class: 'key-space' },
+                { key: 'Key_RightAlt', label: 'Alt Gr', class: 'key-alt' },
+                { key: 'Key_RightWin', label: '⊞', class: 'key-ctrl' },
+                { key: 'Key_Menu', label: '☰', class: 'key-ctrl' },
+                { key: 'Key_RightControl', label: 'Strg', class: 'key-ctrl' }
+            ],
+            [],
+            [
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                { key: 'Key_Insert', label: 'Einfg' },
+                { key: 'Key_Home', label: 'Pos1' },
+                { key: 'Key_PageUp', label: 'Bild↑' }
+            ],
+            [
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                { key: 'Key_Delete', label: 'Entf' },
+                { key: 'Key_End', label: 'Ende' },
+                { key: 'Key_PageDown', label: 'Bild↓' }
+            ],
+            [],
+            [
+                null, null, null, null, null, null, null, null, null, null, null, null, null, null,
+                { key: 'Key_UpArrow', label: '↑' }
+            ],
+            [
+                null, null, null, null, null, null, null, null, null, null, null, null, null,
+                { key: 'Key_LeftArrow', label: '←' },
+                { key: 'Key_DownArrow', label: '↓' },
+                { key: 'Key_RightArrow', label: '→' }
+            ]
+        ];
+
+        /* =============================================
+           SOUND FUNKTIONEN & Errektionen, danke Anya:3
+        ============================================== */
+        function toggleSound() {
+            const audio = document.getElementById('background-music');
+            const btn = document.getElementById('toggle-sound-btn');
+            
+            if (!musicPlaying) {
+                createAudioContext();
+                audio.play().then(() => {
+                    musicPlaying = true;
+                    btn.innerHTML = '🔇 <strong>Musik: Ausschalten</strong>';
+                    btn.classList.remove('paused');
+                    console.log('Musik gestartet');
+                }).catch((error) => {
+                    console.warn('Konnte Musik nicht starten:', error);
+                    playFallbackMusic();
+                });
+            } else {
+                audio.pause();
+                musicPlaying = false;
+                btn.innerHTML = '🎵 <strong>Musik: Einschalten</strong>';
+                btn.classList.add('paused');
+                console.log('Musik pausiert');
+            }
+        }
+
+        function createAudioContext() {
+            if (!audioContext) {
+                try {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.warn('AudioContext nicht unterstützt');
+                }
+            }
+        }
+
+        function playFallbackMusic() {
+            if (!audioContext) return;
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(220, audioContext.currentTime);
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.1);
+            
+            console.log('Fallback-Musik abgespielt');
+        }
+
+        /* ========================================
+           SCHABLONEN FUNKTIONEN
+        ======================================== */
+        function showTemplate() {
+            generateKeyboardTemplate();
+            document.getElementById('templateOverlay').style.display = 'flex';
+        }
+
+        function closeTemplate() {
+            document.getElementById('templateOverlay').style.display = 'none';
+        }
+
+        function generateKeyboardTemplate() {
+            const container = document.getElementById('keyboardTemplate');
+            container.innerHTML = '';
+
+            keyboardLayout.forEach(row => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'keyboard-row';
+
+                row.forEach(keyData => {
+                    if (keyData === null) {
+                        const spacer = document.createElement('div');
+                        spacer.style.minWidth = '10px';
+                        rowDiv.appendChild(spacer);
+                        return;
+                    }
+
+                    const keyButton = document.createElement('div');
+                    keyButton.className = 'key-button';
+                    if (keyData.class) {
+                        keyButton.classList.add(keyData.class);
+                    }
+
+                    // Prüfen ob Taste belegt ist
+                    const binding = findBindingForKey(keyData.key);
+                    if (binding) {
+                        keyButton.classList.add('assigned');
+                    }
+
+                    const keyLabel = document.createElement('div');
+                    keyLabel.className = 'key-label';
+                    keyLabel.textContent = keyData.label;
+
+                    const keyFunction = document.createElement('div');
+                    keyFunction.className = 'key-function';
+                    keyFunction.textContent = binding ? formatBindingName(binding) : '';
+
+                    keyButton.appendChild(keyLabel);
+                    keyButton.appendChild(keyFunction);
+
+                    // Tooltip für Details
+                    keyButton.title = binding ? 
+                        `${keyData.label}: ${formatBindingName(binding)}` : 
+                        `${keyData.label}: Nicht belegt`;
+
+                    rowDiv.appendChild(keyButton);
+                });
+
+                container.appendChild(rowDiv);
+            });
+        }
+
+        function findBindingForKey(keyCode) {
+            for (const [bindingName, binding] of Object.entries(currentConfig)) {
+                if (binding.keyboard === keyCode) {
+                    return bindingName;
+                }
+            }
+            return null;
+        }
+
+        /* ========================================
+           LAUFTEXT ANIMATION
+        ======================================== */
+        function initScrollingText() {
+            const scrollingText = document.querySelector('.scrolling-text');
+            if (scrollingText) {
+                scrollingText.style.display = 'inline-block';
+                scrollingText.style.transform = 'translateX(0%)';
+                
+                setTimeout(() => {
+                    scrollingText.style.animation = 'scroll-immediate 45s linear infinite';
+                }, 100);
+            }
+        }
+
+        /* ========================================
+           KATEGORIEN INITIALISIERUNG
+        ======================================== */
+        function initializeCategories() {
+            categories = {
+                'Flug': ['YawLeftButton', 'YawRightButton', 'RollLeftButton', 'RollRightButton',
+                         'ForwardKey', 'BackwardKey', 'UpThrustButton', 'DownThrustButton',
+                         'ToggleFlightAssist', 'UseBoostJuice', 'SetSpeedZero'],
+                'Kampf': ['PrimaryFire', 'SecondaryFire', 'DeployHardpointToggle', 'DeployHeatSink',
+                         'FireChaffLauncher', 'CycleFireGroupNext', 'CycleFireGroupPrevious',
+                         'ToggleButtonUpInput'],
+                'Navigation': ['SelectTarget', 'CycleNextTarget', 'SelectHighestThreat', 
+                                 'Supercruise', 'Hyperspace', 'HyperSuperCombination',
+                                 'SelectTargetsTarget', 'WingNavLock', 'CycleNextSubsystem'],
+                'Targeting': ['TargetWingman0', 'TargetWingman1', 'TargetWingman2', 
+                                 'CycleNextHostileTarget', 'CyclePreviousHostileTarget'],
+                'Energie': ['IncreaseEnginesPower', 'IncreaseWeaponsPower', 'IncreaseSystemsPower',
+                                'ResetPowerDistribution'],
+                'Radar & Scanner': ['RadarIncreaseRange', 'RadarDecreaseRange', 'ExplorationFSSEnter',
+                                     'ExplorationFSSTarget', 'ExplorationFSSDiscoveryScan'],
+                'UI & Panels': ['UIFocus', 'FocusLeftPanel', 'FocusCommsPanel', 'FocusRadarPanel',
+                                 'FocusRightPanel', 'CycleNextPanel', 'CyclePreviousPanel',
+                                 'QuickCommsPanel'],
+                'Kamera': ['HeadLookToggle', 'PhotoCameraToggle', 'VanityCameraOne', 'VanityCameraTwo',
+                             'ToggleFreeCam', 'FreeCamToggleHUD', 'PlayerHUDModeToggle'],
+                'Schiff Systeme': ['LandingGearToggle', 'ToggleCargoScoop', 'ShipSpotLightToggle',
+                                     'NightVisionToggle', 'OrbitLinesToggle'],
+                'SRV': ['SteeringAxis', 'BuggyPrimaryFireButton', 'BuggySecondaryFireButton', 
+                         'VerticalThrustersButton', 'ToggleBuggyTurretButton', 'AutoBreakBuggyButton',
+                         'HeadlightsBuggyButton', 'RecallDismissShip'],
+                'On Foot': ['HumanoidForwardAxis', 'HumanoidStrafeAxis', 'HumanoidJumpButton', 
+                            'HumanoidPrimaryFireButton', 'HumanoidZoomButton', 'HumanoidSprintButton',
+                            'HumanoidCrouchButton', 'HumanoidReloadButton', 'HumanoidSwitchWeapon'],
+                'Kommunikation': ['MicrophoneMute', 'OpenCodexGoToDiscovery'],
+                'Sonstige': []
+            };
+        }
+
+        /* ========================================
+           CONFIG LADEN UND PARSEN
+        ======================================== */
+        function loadConfig() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const parser = new DOMParser();
+                    const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
+                    parseXMLConfig(xmlDoc);
+                    renderCategories();
+                } catch (error) {
+                    alert('Fehler beim Laden der XML-Datei: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseXMLConfig(xmlDoc) {
+            currentConfig = {};
+            keyBindings.clear();
+            
+            const root = xmlDoc.documentElement;
+            const elements = root.children;
+            
+            for (let element of elements) {
+                if (['KeyboardLayout', 'MouseXMode', 'MouseYMode', 'MouseXDecay', 'MouseYDecay',
+                    'MouseSensitivity', 'MouseDecayRate', 'MouseDeadzone', 'MouseLinearity',
+                    'MouseGUI', 'EnableRumbleTrigger', 'EnableMenuGroups'].includes(element.tagName)) {
+                    continue;
+                }
+                
+                const bindingName = element.tagName;
+                const binding = {
+                    keyboard: '',
+                    mouse: '',
+                    gamepad1: '',
+                    gamepad2: ''
+                };
+                
+                const primaryElement = element.querySelector('Primary');
+                const secondaryElement = element.querySelector('Secondary');
+                
+                if (primaryElement) {
+                    const device = primaryElement.getAttribute('Device');
+                    const key = primaryElement.getAttribute('Key');
+                    
+                    if (device === 'Keyboard' && key && key !== '') {
+                        binding.keyboard = key;
+                        if (key !== '{NoDevice}') {
+                            keyBindings.set(`keyboard-${key}`, bindingName);
+                        }
+                    } else if (device === 'Mouse' && key && key !== '') {
+                        binding.mouse = key;
+                        if (key !== '{NoDevice}') {
+                            keyBindings.set(`mouse-${key}`, bindingName);
+                        }
+                    } else if (device && device !== '{NoDevice}' && device !== 'Keyboard' && device !== 'Mouse' && key && key !== '') {
+                        binding.gamepad1 = key;
+                        keyBindings.set(`gamepad1-${key}`, bindingName);
+                    }
+                }
+                
+                if (secondaryElement) {
+                    const device = secondaryElement.getAttribute('Device');
+                    const key = secondaryElement.getAttribute('Key');
+                    
+                    if (device === 'Keyboard' && key && key !== '' && key !== '{NoDevice}') {
+                        if (!binding.keyboard) {
+                            binding.keyboard = key;
+                            keyBindings.set(`keyboard-${key}`, bindingName);
+                        }
+                    } else if (device === 'Mouse' && key && key !== '' && key !== '{NoDevice}') {
+                        if (!binding.mouse) {
+                            binding.mouse = key;
+                            keyBindings.set(`mouse-${key}`, bindingName);
+                        }
+                    } else if (device && device !== '{NoDevice}' && device !== 'Keyboard' && device !== 'Mouse' && key && key !== '') {
+                        if (!binding.gamepad1) {
+                            binding.gamepad1 = key;
+                            keyBindings.set(`gamepad1-${key}`, bindingName);
+                        } else {
+                            binding.gamepad2 = key;
+                            keyBindings.set(`gamepad2-${key}`, bindingName);
+                        }
+                    }
+                }
+                
+                const axisElement = element.querySelector('Binding');
+                if (axisElement) {
+                    const device = axisElement.getAttribute('Device');
+                    const key = axisElement.getAttribute('Key');
+                    
+                    if (device && device !== '{NoDevice}' && key && key !== '') {
+                        if (!binding.gamepad1) {
+                            binding.gamepad1 = key;
+                            keyBindings.set(`gamepad1-${key}`, bindingName);
+                        }
+                    }
+                }
+                
+                currentConfig[bindingName] = binding;
+            }
+        }
+
+        /* ========================================
+           UI RENDERING
+        ======================================== */
+        function renderCategories() {
+            const container = document.getElementById('categories');
+            container.innerHTML = '';
+            
+            for (const [categoryName, bindingKeys] of Object.entries(categories)) {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.innerHTML = `<h3>${categoryName}</h3>`;
+                
+                for (const bindingKey of bindingKeys) {
+                    if (currentConfig[bindingKey]) {
+                        categoryDiv.appendChild(createBindingElement(bindingKey, currentConfig[bindingKey]));
+                    }
+                }
+                
+                if (categoryName === 'Sonstige') {
+                    for (const [bindingKey, binding] of Object.entries(currentConfig)) {
+                        let found = false;
+                        for (const [catName, catBindings] of Object.entries(categories)) {
+                            if (catName !== 'Sonstige' && catBindings.includes(bindingKey)) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            categoryDiv.appendChild(createBindingElement(bindingKey, binding));
+                        }
+                    }
+                }
+                
+                if (categoryDiv.children.length > 1) {
+                    container.appendChild(categoryDiv);
+                }
+            }
+        }
+
+        function createBindingElement(bindingKey, binding) {
+            const bindingDiv = document.createElement('div');
+            bindingDiv.className = 'binding-item';
+            bindingDiv.setAttribute('data-binding', bindingKey);
+            
+            const label = document.createElement('div');
+            label.className = 'binding-label';
+            label.textContent = formatBindingName(bindingKey);
+            
+            const deviceInputs = document.createElement('div');
+            deviceInputs.className = 'device-inputs';
+            
+            for (const [deviceType, displayName] of Object.entries(deviceTypes)) {
+                const deviceGroup = document.createElement('div');
+                deviceGroup.className = 'device-group';
+                
+                const deviceLabel = document.createElement('label');
+                deviceLabel.textContent = displayName;
+                
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.value = formatKey(binding[deviceType] || '');
+                input.setAttribute('data-device', deviceType);
+                input.setAttribute('data-binding', bindingKey);
+                input.addEventListener('input', handleInputChange);
+                input.addEventListener('blur', validateBinding);
+                
+                deviceGroup.appendChild(deviceLabel);
+                deviceGroup.appendChild(input);
+                deviceInputs.appendChild(deviceGroup);
+            }
+            
+            bindingDiv.appendChild(label);
+            bindingDiv.appendChild(deviceInputs);
+            
+            return bindingDiv;
+        }
+
+        /* ========================================
+           HILFSFUNKTIONEN
+        ======================================== */
+        function formatBindingName(bindingKey) {
+            return bindingKey.replace(/([A-Z])/g, ' $1').trim();
+        }
+
+        function formatKey(key) {
+            if (!key || key === '{NoDevice}' || key === '') return '';
+            return keyMapping[key] || key.replace('Key_', '').replace('Mouse_', 'Maus ').replace('GamePad_', '');
+        }
+
+        function reverseFormatKey(displayKey, deviceType) {
+            if (!displayKey) return '';
+            
+            for (const [originalKey, mappedKey] of Object.entries(keyMapping)) {
+                if (mappedKey.toLowerCase() === displayKey.toLowerCase()) {
+                    return originalKey;
+                }
+            }
+            
+            if (deviceType === 'keyboard') {
+                if (displayKey.length === 1 && displayKey.match(/[a-zA-Z]/)) {
+                    return `Key_${displayKey.toUpperCase()}`;
+                }
+            } else if (deviceType === 'mouse') {
+                if (displayKey.toLowerCase().includes('maus')) {
+                    const num = displayKey.replace(/[^0-9]/g, '');
+                    if (num) return `Mouse_${num}`;
+                }
+            }
+            
+            return displayKey;
+        }
+
+        /* ========================================
+           INPUT HANDLING
+        ======================================== */
+        function handleInputChange(event) {
+            const input = event.target;
+            const bindingKey = input.getAttribute('data-binding');
+            const deviceType = input.getAttribute('data-device');
+            const displayValue = input.value.trim();
+            const actualValue = reverseFormatKey(displayValue, deviceType);
+            
+            if (!currentConfig[bindingKey]) {
+                currentConfig[bindingKey] = { keyboard: '', mouse: '', gamepad1: '', gamepad2: '' };
+            }
+            
+            currentConfig[bindingKey][deviceType] = actualValue;
+        }
+
+        function validateBinding(event) {
+            const input = event.target;
+            const bindingKey = input.getAttribute('data-binding');
+            const deviceType = input.getAttribute('data-device');
+            const displayValue = input.value.trim();
+            const actualValue = reverseFormatKey(displayValue, deviceType);
+            
+            if (!actualValue) return;
+            
+            const bindingId = `${deviceType}-${actualValue}`;
+            
+            if (keyBindings.has(bindingId)) {
+                const existingBinding = keyBindings.get(bindingId);
+                if (existingBinding !== bindingKey) {
+                    showDuplicateError(bindingKey, existingBinding, deviceType, displayValue, input);
+                    return;
+                }
+            }
+            
+            const oldValue = currentConfig[bindingKey][deviceType];
+            if (oldValue && oldValue !== actualValue) {
+                const oldBindingId = `${deviceType}-${oldValue}`;
+                keyBindings.delete(oldBindingId);
+            }
+            
+            keyBindings.set(bindingId, bindingKey);
+            input.classList.remove('duplicate-highlight');
+        }
+
+        /* ========================================
+           FEHLERBEHANDLUNG
+        ======================================== */
+        function showDuplicateError(newBinding, existingBinding, deviceType, key, inputElement) {
+            duplicateContext = {
+                newBinding,
+                existingBinding,
+                deviceType,
+                key,
+                inputElement,
+                actualKey: reverseFormatKey(key, deviceType)
+            };
+            
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.innerHTML = `
+                Die Taste "<strong>${key}</strong>" ist bereits für "<strong>${formatBindingName(existingBinding)}</strong>" belegt.<br>
+                Sie versuchen, sie für "<strong>${formatBindingName(newBinding)}</strong>" zu verwenden.
+            `;
+            
+            inputElement.classList.add('duplicate-highlight');
+            document.getElementById('errorOverlay').style.display = 'flex';
+        }
+
+        function resolveDuplicate(replace) {
+            if (!duplicateContext) return;
+            
+            const { newBinding, existingBinding, deviceType, key, inputElement, actualKey } = duplicateContext;
+            const bindingId = `${deviceType}-${actualKey}`;
+            
+            if (replace) {
+                if (currentConfig[existingBinding]) {
+                    currentConfig[existingBinding][deviceType] = '';
+                }
+                
+                const oldInput = document.querySelector(`input[data-binding="${existingBinding}"][data-device="${deviceType}"]`);
+                if (oldInput) {
+                    oldInput.value = '';
+                    oldInput.classList.remove('duplicate-highlight');
+                }
+                
+                keyBindings.set(bindingId, newBinding);
+                currentConfig[newBinding][deviceType] = actualKey;
+                inputElement.classList.remove('duplicate-highlight');
+            } else {
+                inputElement.value = formatKey(currentConfig[newBinding][deviceType] || '');
+                inputElement.classList.remove('duplicate-highlight');
+            }
+            
+            closeError();
+        }
+
+        function closeError() {
+            document.getElementById('errorOverlay').style.display = 'none';
+            duplicateContext = null;
+        }
+
+        /* ========================================
+           DATEI OPERATIONEN
+        ======================================== */
+        function saveConfig() {
+            try {
+                const xmlContent = generateXML();
+                const blob = new Blob([xmlContent], { type: 'application/xml' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'Test.binds';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                alert('Konfiguration erfolgreich als Test.binds gespeichert!');
+            } catch (error) {
+                alert('Fehler beim Speichern: ' + error.message);
+            }
+        }
+
+        function generateXML() {
+            let xml = '<?xml version="1.0" encoding="UTF-8" ?>\n';
+            xml += '<Root PresetName="Custom" MajorVersion="4" MinorVersion="2">\n';
+            xml += '\t<KeyboardLayout>de-DE</KeyboardLayout>\n';
+            
+            xml += '\t<MouseXMode Value="Bindings_MouseYaw" />\n';
+            xml += '\t<MouseXDecay Value="0" />\n';
+            xml += '\t<MouseYMode Value="Bindings_MousePitch" />\n';
+            xml += '\t<MouseYDecay Value="0" />\n';
+            xml += '\t<MouseSensitivity Value="1.00000000" />\n';
+            xml += '\t<MouseDecayRate Value="4.00000000" />\n';
+            xml += '\t<MouseDeadzone Value="0.05000000" />\n';
+            xml += '\t<MouseLinearity Value="1.00000000" />\n';
+            xml += '\t<MouseGUI Value="1" />\n';
+            
+            for (const [bindingKey, binding] of Object.entries(currentConfig)) {
+                xml += `\t<${bindingKey}>\n`;
+                
+                let primaryKey = binding.keyboard || binding.mouse || binding.gamepad1;
+                let primaryDevice = '';
+                if (binding.keyboard) primaryDevice = 'Keyboard';
+                else if (binding.mouse) primaryDevice = 'Mouse';
+                else if (binding.gamepad1) primaryDevice = '28DE11FF';
+
+                if (primaryKey) {
+                    xml += `\t\t<Primary Device="${primaryDevice}" Key="${primaryKey}" />\n`;
+                } else {
+                    xml += '\t\t<Primary Device="{NoDevice}" Key="" />\n';
+                }
+
+                let secondaryKey = '';
+                let secondaryDevice = '';
+                if (binding.gamepad2) {
+                    secondaryKey = binding.gamepad2;
+                    secondaryDevice = '28DE11FG';
+                }
+
+                if (secondaryKey) {
+                    xml += `\t\t<Secondary Device="${secondaryDevice}" Key="${secondaryKey}" />\n`;
+                } else {
+                    xml += '\t\t<Secondary Device="{NoDevice}" Key="" />\n';
+                }
+                
+                xml += `\t</${bindingKey}>\n`;
+            }
+            xml += '</Root>';
+            return xml;
+        }
+
+        function resetConfig() {
+            currentConfig = {};
+            keyBindings.clear();
+            renderCategories();
+
+            const fileInput = document.getElementById('fileInput');
+            fileInput.value = '';
+        }
+
+        /* ========================================
+           SUCHFUNKTION
+        ======================================== */
+        function filterBindings() {
+            const searchBox = document.getElementById('searchBox');
+            const filter = searchBox.value.toLowerCase();
+            const bindingItems = document.querySelectorAll('.binding-item');
+
+            bindingItems.forEach(item => {
+                const label = item.querySelector('.binding-label').textContent.toLowerCase();
+                const inputs = Array.from(item.querySelectorAll('input')).map(input => input.value.toLowerCase());
+
+                if (label.includes(filter) || inputs.some(input => input.includes(filter))) {
+                    item.style.display = '';
+                    item.closest('.category').style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+
+            const categoriesDivs = document.querySelectorAll('.category');
+            categoriesDivs.forEach(category => {
+                const visibleBindings = category.querySelectorAll('.binding-item:not([style*="display: none"])');
+                if (visibleBindings.length === 0) {
+                    category.style.display = 'none';
+                } else {
+                    category.style.display = '';
+                }
+            });
+        }
+
+        /* ========================================
+           EVENT LISTENERS UND INITIALISIERUNG
+        ======================================== */
+        document.getElementById('fileInput').addEventListener('change', loadConfig);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCategories();
+            renderCategories();
+            initScrollingText();
+            
+            const soundBtn = document.getElementById('toggle-sound-btn');
+            if (soundBtn) {
+                soundBtn.addEventListener('click', toggleSound);
+            }
+        });
+    </script>
+</body>
+</html>
