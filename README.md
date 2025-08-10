@@ -1,5 +1,5 @@
-# offlinekeybinder 
-Elite-Dangerous Offlinekeybinder (w) by Beilrais 
+# Elite Dangerous -Offlinekeybinder 
+Elite-Dangerous Offlinekeybinder (w) Team Hut&Kraga, Beilrais
 
 Wie der Name schon sagt, ist dies ein kleines Programm, das die Konfiguration der Tastenbelegung für Elite Dangerous vereinfacht.
 Neue Spieler können auch eine Vorlage basierend auf ihrem Tastaturlayout erstellen, um sich schneller an die Steuerung zu gewöhnen.
