@@ -1,4 +1,4 @@
-# offlinekeybinder (ger)
+# offlinekeybinder 
 Elite-Dangerous Offlinekeybinder (w) by Beilrais 
 
 This small program simplifies the configuration of key bindings for Elite Dangerous.
