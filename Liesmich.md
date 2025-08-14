@@ -4,7 +4,7 @@ Ein schmaler Guide Rund um Elite.
 
 ________________________________________________________________
 
-# Elite Dangerous -Supernarkt
+# Elite Dangerous -Supermarkt
 
 Kleines handliches Tool um den besten Preis zu finden.
 Verbunden mit den gängigen API´s
@@ -48,5 +48,50 @@ Bekannte Probleme:
 - Scalierung des GUI macht es nur am Desktop PC optimal sichtbar. Keine Tests an Handy oder Tablets erfolgt.
 
 
-Einfach die Html´s herunterladen und öffnen.
-Viel Spass!
+
+
+# Rechtlicher Hinweis (Elite Dangerous)
+
+Nicht-Affiliation & Marken
+Dieses Projekt steht in keiner Verbindung zu Frontier Developments plc („Frontier“) und wird weder von Frontier unterstützt noch gesponsert.
+„Elite“, „Elite Dangerous“, das Elite-Dangerous-Logo, „Frontier“ und das Frontier-Logo sind eingetragene Marken von Frontier Developments plc. Alle übrigen Marken sind Eigentum ihrer jeweiligen Inhaber.
+
+Datenquellen & API-Nutzung
+Dieses Projekt nutzt ausschließlich:
+
+Lokale Player-Journal-Dateien des jeweiligen Spielers/der jeweiligen Spielerin, die Elite Dangerous während des Spiels schreibt.
+
+Offizielle Online-Funktionen des Spiels (z. B. die in der Community als Companion API / cAPI bezeichneten Endpunkte), soweit verfügbar und zulässig.
+Es werden keine Sicherheitsmechanismen umgangen, keine nicht autorisierten Zugriffe vorgenommen und keine Frontend-/Web-Assets von Frontier „gescraped“. Der Zugriff erfolgt nur im Namen des/der jeweiligen Spielenden und unter Beachtung der Frontier-EULA/Terms. Funktionsumfang und Verfügbarkeit inoffizieller Endpunkte können sich jederzeit ändern.
+
+Respekt von EULA/Code of Conduct
+Die Nutzung dieses Projekts darf nur im Einklang mit Frontiers Endbenutzer-Lizenzvertrag (EULA), den Bedingungen für Online-Funktionen und dem Code of Conduct erfolgen. Bei Widerspruch zwischen diesem Projekt und den Frontier-Bedingungen gehen die Frontier-Bedingungen vor.
+
+Medien-/Asset-Nutzung
+Inhalte und Assets von Frontier (Logos, Grafiken, Audio/Video, In-Game-Material etc.) dürfen nicht für kommerzielle Zwecke verwendet werden, es sei denn, Frontier hat dies ausdrücklich genehmigt. Es darf nicht der Eindruck erweckt werden, Frontier zu vertreten oder zu imitieren.
+
+Drittanbieter-Services
+Soweit dieses Projekt optionale Integrationen mit Community-Diensten (z. B. EDSM/EDDB/INARA/EDDN) erlaubt, gelten zusätzlich deren jeweilige Nutzungsbedingungen und API-Regeln. Für Verfügbarkeit, Richtigkeit oder Lizenzlage dieser externen Dienste übernehmen wir keine Verantwortung.
+
+Datenschutz & Sicherheit
+Sofern Anmeldedaten/Tokens für Frontier-Onlinefunktionen genutzt werden, sollten sie nur lokal und sicher gespeichert werden. Dieses Projekt sollte keine Frontier-Passwörter im Klartext speichern. Nutzende sind dafür verantwortlich, die Weitergabe ihrer Journal-Dateien oder Tokens zu kontrollieren und geltende Datenschutzgesetze einzuhalten.
+
+Fair Use & Rate Limits
+Bitte rufe Online-Endpunkte maßvoll ab, verwende Caching, respektiere Rate-Limits und vermeide jede Form von Last, die Dienste von Frontier oder Dritten beeinträchtigen könnte.
+
+Haftungsausschluss
+Dieses Projekt wird „wie besehen“ bereitgestellt – ohne Gewährleistung. Die Nutzung erfolgt auf eigenes Risiko. Der/die Projektbetreiber:in übernimmt keine Haftung für Sperren, Datenverluste oder sonstige Schäden, die aus der Nutzung entstehen könnten.
+
+Takedown & Kontakt
+Rechtsinhaber:innen (inkl. Frontier) können die Entfernung von Inhalten verlangen, die ihre Rechte verletzen. Bitte kontaktiere uns unter: 
+
+## Code-Änderungen & Haftungsbegrenzung
+
+Alle Änderungen am Quellcode sowie am Header (einschließlich Anpassung oder Entfernung von Hinweisen) erfolgen ausschließlich auf eigenes Risiko. Für daraus entstehende Fehler, Sicherheitsrisiken, Inkompatibilitäten oder Rechtsverstöße übernehmen wir keine Gewähr und keine Haftung.
+Kein Anspruch auf Support oder Updates für veränderte Fassungen. Gesetzlich zwingende Haftung (z. B. bei Vorsatz oder grober Fahrlässigkeit) bleibt unberührt.
+    
+Takedown & Kontakt
+Rechtsinhaber:innen (inkl. Frontier) können die Entfernung von Inhalten verlangen, die ihre Rechte verletzen. Bitte kontaktiere uns unter:
+
+Hut und Kraga Kompendium --->Discord: https://discord.gg/x2ShF954AN
+    
