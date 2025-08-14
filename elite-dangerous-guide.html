@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Elite Dangerous - Guide</title>
+  <meta name="description" content="Elite Dangerous - Guide im typischen HUD-Stil: kompakte Tipps, Reiter-Navigation, Ship- & Engineer-Guides." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;800&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --hud-bg:#07080a;
+      --hud-panel:#0f1114;
+      --hud-accent:#ff8a00;
+      --hud-accent-dim:#c76a00;
+      --hud-text:#f4e9dd;
+      --hud-text-dim:#c7b9a7;
+      --ok:#00c896; --warn:#ffb000; --danger:#ff5136;
+      --glow: 0 0 .5rem rgba(255,138,0,.35), 0 0 1.25rem rgba(255,138,0,.25);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:'Rajdhani', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color:var(--hud-text);
+      background:
+        radial-gradient(2000px 1000px at 50% -20%, rgba(255,138,0,.05), transparent 60%),
+        linear-gradient(0deg, rgba(255,138,0,.04) 1px, transparent 1px) repeat,
+        linear-gradient(90deg, rgba(255,138,0,.03) 1px, transparent 1px) repeat,
+        linear-gradient(180deg, #08090a 0%, #050607 100% );
+      background-size:auto, 100% 14px, 14px 100%, auto;
+      background-color:var(--hud-bg);
+      letter-spacing:.2px;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(to bottom, rgba(15,17,20,.95), rgba(15,17,20,.78));
+      border-bottom:1px solid rgba(255,138,0,.2);
+      box-shadow: var(--glow);
+      backdrop-filter: blur(4px);
+    }
+    .wrap{max-width:1200px; margin:0 auto; padding:12px 16px;}
+    .brand{display:flex; align-items:center; gap:12px;}
+    .brand .logo{
+      width:38px; height:38px; border:1px solid var(--hud-accent);
+      border-radius:6px; transform:skewX(-10deg);
+      position:relative; display:grid; place-items:center;
+      color:var(--hud-accent); background:linear-gradient(135deg, rgba(255,138,0,.10), transparent);
+      box-shadow: 0 0 0 1px rgba(255,138,0,.15), var(--glow);
+    }
+    .brand .logo svg{ width:28px; height:28px; filter: drop-shadow(0 0 8px rgba(255,138,0,.45)); }
+    h1{
+      font-family:'Orbitron', sans-serif; margin:0; font-weight:800; letter-spacing:1.2px; font-size:1.25rem;
+      text-transform:uppercase;
+    }
+    .sub{ color:var(--hud-text-dim); font-size:.9rem; margin-top:2px; }
+
+    /* Tabs (Reiter) */
+    .tabs{ display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+    .tab-btn{
+      appearance:none; border:1px solid rgba(255,138,0,.35);
+      background: linear-gradient(180deg, rgba(255,138,0,.14), rgba(255,138,0,.06));
+      color:var(--hud-text); padding:8px 12px; border-radius:8px;
+      font-family:'Orbitron', sans-serif; font-size:.9rem; letter-spacing:.6px;
+      text-transform:uppercase; cursor:pointer; position:relative; isolation:isolate;
+      transition: transform .08s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+      clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+    }
+    .tab-btn:hover{ transform: translateY(-1px); box-shadow: var(--glow); }
+    .tab-btn.active{
+      border-color: var(--hud-accent);
+      background: linear-gradient(180deg, rgba(255,138,0,.22), rgba(255,138,0,.10));
+      box-shadow: 0 0 0 1px rgba(255,138,0,.4), var(--glow);
+    }
+    .tab-btn:focus-visible{ outline:none; box-shadow: 0 0 0 2px rgba(255,138,0,.6), var(--glow); }
+
+    /* Panels */
+    .panel{
+      background: linear-gradient(180deg, rgba(15,17,20,.9), rgba(10,12,14,.9));
+      border:1px solid rgba(255,138,0,.22);
+      border-radius:14px; padding:14px 14px 10px; position:relative; overflow:hidden; margin:18px 0 26px;
+      clip-path: polygon(14px 0, 100% 0, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0 100%, 0 14px);
+      display:none;
+    }
+    .panel::before{
+      content:""; position:absolute; inset:0; background:
+        linear-gradient(120deg, rgba(255,138,0,.10), transparent 45%),
+        repeating-linear-gradient( to bottom, rgba(255,255,255,.02) 0 1px, transparent 1px 3px);
+      pointer-events:none;
+    }
+    .panel.active{ display:block; animation: fadeIn .18s ease; }
+    @keyframes fadeIn{ from{ opacity:.6; transform: translateY(2px) } to{ opacity:1; transform:none } }
+
+    .panel h2{
+      margin:4px 0 8px; font-family:'Orbitron', sans-serif; font-size:1.05rem; letter-spacing:.8px; text-transform:uppercase;
+      display:flex; align-items:center; gap:8px; color:var(--hud-accent);
+      text-shadow: 0 0 10px rgba(255,138,0,.3);
+    }
+    .muted{ color:var(--hud-text-dim); font-size:.95rem; }
+    ul.tips{ margin:10px 0 12px 0; padding:0 0 0 18px; }
+    ul.tips li{ margin:6px 0; line-height:1.45; }
+    .badge{
+      display:inline-block; font-family:'Orbitron', sans-serif; font-size:.7rem; padding:2px 6px; border-radius:999px;
+      border:1px solid rgba(255,138,0,.45);
+      background: linear-gradient(180deg, rgba(255,138,0,.18), rgba(255,138,0,.06));
+      margin-left:6px; letter-spacing:.6px;
+    }
+    .keys{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+      font-size:.95em; background:rgba(255,138,0,.08); border:1px solid rgba(255,138,0,.28); border-radius:6px; padding:1px 6px;
+    }
+
+    /* Cards & chips */
+    .cards{ display:grid; grid-template-columns: 1fr; gap:12px; }
+    .card{
+      background: linear-gradient(180deg, rgba(18,20,24,.92), rgba(10,12,14,.92));
+      border:1px solid rgba(255,138,0,.18);
+      border-radius:12px; padding:12px; position:relative; overflow:hidden;
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+    }
+    .card h3{
+      margin:.2rem 0 .4rem; font-family:'Orbitron', sans-serif; letter-spacing:.8px; text-transform:uppercase; font-size:1rem; color:var(--hud-text);
+    }
+    .chips{ display:flex; flex-wrap:wrap; gap:6px; margin:6px 0 8px; }
+    .chip{
+      border:1px solid rgba(255,138,0,.35);
+      background:linear-gradient(180deg, rgba(255,138,0,.12), rgba(255,138,0,.05));
+      border-radius:999px; padding:3px 8px; font-size:.78rem; cursor:default;
+    }
+
+    /* Ships grid */
+    .ship-filters{ display:flex; flex-wrap:wrap; gap:8px; margin:10px 0 12px; }
+    .filter-btn{
+      border:1px solid rgba(255,138,0,.35);
+      background:linear-gradient(180deg, rgba(255,138,0,.12), rgba(255,138,0,.06));
+      padding:6px 10px; border-radius:999px; font-size:.85rem; cursor:pointer;
+      color:#ffffff;
+    }
+    .filter-btn.active{ border-color:var(--hud-accent); box-shadow:var(--glow); }
+    .ship-cards{ display:grid; grid-template-columns: 1fr; gap:12px; }
+    .ship-card{ display:block; }
+    .ship-card[hidden]{ display:none !important; }
+    .ship-card ul{ margin:6px 0 0 18px; }
+
+    footer{
+      text-align:center; color:var(--hud-text-dim); font-size:.85rem; padding:20px; border-top:1px solid rgba(255,138,0,.15);
+      background:linear-gradient(to top, rgba(15,17,20,.75), transparent);
+    }
+
+    /* Responsive */
+    @media (min-width: 880px){
+      .cards{ grid-template-columns: repeat(2, 1fr); }
+      .ship-cards{ grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1120px){
+      .ship-cards{ grid-template-columns: repeat(3, 1fr); }
+    }
+  
+    /* --- Mobile enhancements --- */
+    /* Allow horizontal scroll for tabs on narrow screens */
+    .tabs{ overflow-x:auto; -webkit-overflow-scrolling: touch; }
+    @media (max-width: 600px){
+      html, body{ height:auto; }
+      body{ font-size: clamp(15px, 3.5vw, 17px); padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); }
+      h1{ font-size: clamp(1.0rem, 4.4vw, 1.25rem); }
+      .panel h2{ font-size: clamp(0.95rem, 3.8vw, 1.05rem); }
+      .wrap{ padding: 10px 12px; }
+      header .wrap{ padding-top: calc(10px + env(safe-area-inset-top)); }
+      .tabs{
+        white-space: nowrap;
+        gap: 6px;
+        padding-bottom: 6px;
+        scroll-snap-type: x mandatory;
+        mask-image: linear-gradient(to right, transparent 0, black 12px, black calc(100% - 12px), transparent 100%);
+      }
+      .tab-btn{
+        display:inline-flex; align-items:center; justify-content:center;
+        min-height:44px; /* comfortable tap target */
+        padding: 8px 12px;
+        font-size: 0.92rem;
+        scroll-snap-align: start;
+      }
+      .panel{ margin: 12px 0 18px; padding: 12px; border-radius: 12px; }
+      .cards, .ship-cards{ grid-template-columns: 1fr; gap: 10px; }
+      .chip{ font-size:.8rem; padding: 4px 8px; }
+      .ship-filters{
+        overflow-x: auto; -webkit-overflow-scrolling: touch;
+        white-space: nowrap; gap: 6px;
+        scroll-snap-type: x proximity;
+      }
+      .filter-btn{
+        display:inline-flex; align-items:center; justify-content:center;
+        min-height: 38px;
+        padding: 6px 10px;
+        scroll-snap-align: start;
+      }
+      footer{ padding-bottom: calc(20px + env(safe-area-inset-bottom)); }
+    }
+    @media (prefers-reduced-motion: reduce){
+      *{ animation: none !important; scroll-behavior: auto !important; }
+    }
+
+  
+    /* HUD table */
+    .hud-table{ width:100%; border-collapse:collapse; margin:8px 0 6px; font-size:.95rem;}
+    .hud-table th, .hud-table td{
+      border:1px solid rgba(255,138,0,.22);
+      padding:8px 10px; vertical-align:top;
+      background: linear-gradient(180deg, rgba(18,20,24,.92), rgba(10,12,14,.92));
+    }
+    .hud-table th{
+      font-family:'Orbitron', sans-serif; text-transform:uppercase; letter-spacing:.7px;
+      background: linear-gradient(180deg, rgba(255,138,0,.14), rgba(255,138,0,.06));
+      color:var(--hud-text);
+    }
+    .stars{ letter-spacing:1px; }
+    .legend{ color:var(--hud-text-dim); font-size:.9rem; margin-top:6px; }
+    
+    /* --- Logo toggle glow --- */
+    .brand .logo{
+      cursor:pointer;
+      user-select:none;
+      transition: box-shadow .25s ease, border-color .25s ease, transform .08s ease;
+    }
+    .brand .logo:active{ transform: translateY(1px) scale(.98); }
+    .brand .logo.is-glow{
+      border-color: #ffd9a3;
+      box-shadow:
+        0 0 0 1px rgba(255,214,153,.9),
+        0 0 16px rgba(255,180,90,.9),
+        0 0 32px rgba(255,160,60,.65),
+        var(--glow);
+    }
+    .brand .logo.is-glow svg{ filter: drop-shadow(0 0 10px rgba(255,200,120,.85)); }
+    .brand .logo.click-flash::after{
+      content:""; position:absolute; inset:-3px; border-radius:8px; pointer-events:none;
+      box-shadow: 0 0 0 2px rgba(255,180,90,.85), 0 0 18px rgba(255,160,60,.55);
+      animation: ed-flash .35s ease-out forwards;
+    }
+    @keyframes ed-flash{ from{opacity:1} to{opacity:0} }
+    .brand h1.is-alt{
+      color: var(--hud-text);
+      text-shadow: 0 0 12px rgba(255,200,120,.55), 0 0 26px rgba(255,138,0,.35);
+      letter-spacing: 1.4px;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <div class="logo" aria-hidden="true" role="img" aria-label="Elite Dangerous Symbol">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M6 40 L20 30 L26 20 L18 22 L26 12" />
+              <path d="M58 40 L44 30 L38 20 L46 22 L38 12" />
+              <path d="M24 44 L32 30 L40 44 L32 52 Z" />
+              <path d="M18 30 L32 24 L46 30" />
+            </g>
+          </svg>
+        </div>
+        <div>
+          <h1>Elite Dangerous - Guide</h1>
+          <div class="sub">Klicke einen Reiter, um die Tipps der Kategorie anzuzeigen.</div>
+        </div>
+      </div>
+
+      <!-- Order: Fortschritt zuerst, Spätphase nach hinten -->
+      <nav class="tabs" role="tablist" aria-label="Kategorien">
+        <button class="tab-btn active" role="tab" id="tab-start" aria-controls="start" aria-selected="true" type="button" data-target="start">Start</button>
+        <button class="tab-btn" role="tab" id="tab-steuerung" aria-controls="steuerung" aria-selected="false" type="button" data-target="steuerung">Steuerung (Luft &amp; Boden)</button>
+        <button class="tab-btn" role="tab" id="tab-gewinn" aria-controls="gewinn" aria-selected="false" type="button" data-target="gewinn">Gewinn-Booster</button>
+        <button class="tab-btn" role="tab" id="tab-handel" aria-controls="handel" aria-selected="false" type="button" data-target="handel">Handel</button>
+        <button class="tab-btn" role="tab" id="tab-erkundung" aria-controls="erkundung" aria-selected="false" type="button" data-target="erkundung">Erkundung</button>
+        <button class="tab-btn" role="tab" id="tab-kampf" aria-controls="kampf" aria-selected="false" type="button" data-target="kampf">Kampf</button>
+        <button class="tab-btn" role="tab" id="tab-bergbau" aria-controls="bergbau" aria-selected="false" type="button" data-target="bergbau">Bergbau</button>
+        <button class="tab-btn" role="tab" id="tab-navigation" aria-controls="navigation" aria-selected="false" type="button" data-target="navigation">Navigation</button>
+        <button class="tab-btn" role="tab" id="tab-ingenieure" aria-controls="ingenieure" aria-selected="false" type="button" data-target="ingenieure">Ingenieure</button>
+        <button class="tab-btn" role="tab" id="tab-schiffe" aria-controls="schiffe" aria-selected="false" type="button" data-target="schiffe">Schiffe &amp; Ausrüstung</button>
+        <button class="tab-btn" role="tab" id="tab-geld" aria-controls="geld" aria-selected="false" type="button" data-target="geld">Geld &amp; Rang</button>
+        <button class="tab-btn" role="tab" id="tab-schiffe-zweck" aria-controls="schiffe-zweck" aria-selected="false" type="button" data-target="schiffe-zweck">Schiffe nach Zweck</button>
+        <button class="tab-btn" role="tab" id="tab-stationen" aria-controls="stationen" aria-selected="false" type="button" data-target="stationen">Stationen-Bau &amp; Carrier</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section id="start" class="panel active" role="tabpanel" aria-labelledby="tab-start" tabindex="0" aria-hidden="false">
+      <h2>Willkommen, Commander <span class="badge">Übersicht</span></h2>
+      <p class="muted">HUD-Farben, Kanten und Glow sind an das Elite-Dangerous-Overlay angelehnt. Diese Seite eignet sich als Second-Screen-Overlay. Nutze die Reiter oben.</p>
+      <ul class="tips">
+        <li><strong>Versichere dein Schiff:</strong> Behalte immer genug Credits für die <em>Wiederbeschaffung</em> (Rebuy). Faustregel: <span class="keys">≥ 3×</span> der Rebuy-Kosten als Puffer.</li>
+        <li><strong>Verbündete zahlen besser:</strong> Steigere <em>Ruf</em> bis <em>Verbündet</em> – Missionserträge steigen deutlich.</li>
+        <li><strong>Prioritäten im Kraftwerk:</strong> Ordne Modulen Prioritäten zu, damit bei Strommangel Unwichtiges zuerst ausgeht.</li>
+        <li><strong>Hitzemanagement:</strong> Überwache Temperatur &gt; <span class="keys">100%</span>. <em>Silent Running</em> nur kurz und mit <em>Hitzesenkeen</em>.</li>
+      </ul>
+    </section>
+
+    <section id="steuerung" class="panel" role="tabpanel" aria-labelledby="tab-steuerung" tabindex="0" aria-hidden="true">
+      <h2>Steuerung (Luft &amp; Boden) <span class="badge">Optimale Belegung</span></h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Grundprinzipien</h3>
+          <ul class="tips">
+            <li><strong>Kontext auf Tasten legen:</strong> Häufig genutzte Aktionen unter dem Zeigefinger/Daumen: <em>Pips</em>, <em>Boost</em>, <em>FA Off</em>, <em>Chaff</em>, <em>Heat Sink</em>, <em>Zielwahl</em>.</li>
+            <li><strong>Hold vs. Toggle:</strong> <em>FA Off</em> auf <em>Hold</em> für Manöver, <em>Silent Running</em> auf <em>Toggle</em> (mit Heat Sinks).</li>
+            <li><strong>Analoge Achsen:</strong> Schub (0–100), Lateral und Vertikal auf Achsen oder Ministick legen.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Flug (Raum)</h3>
+          <ul class="tips">
+            <li><strong>Schub/Throttle:</strong> Eigene Achse mit Rastpunkten; <em>Blue-Zone</em> leicht erreichbar.</li>
+            <li><strong>Pitch/Roll/Yaw:</strong> Pitch/Roll auf Hauptstick; Yaw auf Twist oder Pedale. Maus: Pitch/Roll auf Maus, Yaw auf <span class="keys">Q/E</span>.</li>
+            <li><strong>Lateral/Vertical:</strong> Seitwärts &amp; Auf/Ab auf Ministick/Hat für Strafe Circles.</li>
+            <li><strong>Pip-Shortcuts:</strong> <em>Max SYS</em>, <em>Max ENG</em>, <em>Max WEP</em>, <em>Ausgleichen</em> binden.</li>
+            <li><strong>Utility-Sofort:</strong> <em>Chaff</em>, <em>Heat Sink</em>, <em>Shield Cell</em> mit Modifier gegen Fehlklick.</li>
+            <li><strong>Zielwahl:</strong> <em>Nächstes Ziel</em>, <em>Nächster Feind</em>, <em>Untersystem vor/zurück</em> binden.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Boden (SRV &amp; On-Foot)</h3>
+          <ul class="tips">
+            <li><strong>SRV-Fahren:</strong> Gas/Bremse auf Achsen/Trigger, Lenkung auf Stick/Maus; <em>Handbremse</em>, <em>Frachtluke</em>, <em>Recall Ship</em>.</li>
+            <li><strong>SRV-Kampf:</strong> <em>Turret-Umschalten</em>, <em>Gyro</em>, <em>Sensor-Zoom</em>, <em>Schubdüsen</em> griffbereit.</li>
+            <li><strong>On-Foot:</strong> <em>Werkzeug wechseln</em>, <em>Scanner</em>, <em>Schild</em>, <em>Jetpack</em>, <em>Feuermodi</em>, <em>Sprint/Crouch</em>.</li>
+          </ul>
+        </article>
+      </div>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Feintuning: Deadzones und Kurven (Expo) anpassen – kleine Deadzones für Maus/KB, etwas größer für ältere Sticks.</li><li>Relative Maus/Yaw ausprobieren; Headlook auf Toggle legen, um schnell Blick und Steuerung zu trennen.</li><li>On‑Foot: Sprint/Crouch auf gut erreichbare Tasten; Jetpack auf Hold; Werkzeug‑/Scanner‑Wechsel nahe am WASD/Stick.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Feinabstimmung der Eingaben: Kleine <em>Deadzones</em> für Maus/KB, etwas größere für ältere Sticks; exponentielle Kurven (Expo) für präzises Zielen im Dogfight.</li><li>Throttle-Detents setzen (z. B. Blue‑Zone, Nullschub) und akustische/visuelle Marker nutzen, um schnell zwischen Reise- und Kampfprofil zu wechseln.</li><li>Zwei Profile anlegen: <em>Reise</em> (ruhige Kurven, große Deadzones) und <em>Kampf</em> (feine Kurven, geringe Deadzones) und per Hotkey umschalten.</li><li>On‑Foot: ADS auf <em>Hold</em>, Jetpack auf <em>Hold</em>, Granaten/Werkzeuge auf gut erreichbare Tasten mit Sicherheits‑Modifier legen.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="gewinn" class="panel" role="tabpanel" aria-labelledby="tab-gewinn" tabindex="0" aria-hidden="true">
+      <h2>Gewinn-Booster <span class="badge">Schnell mehr Credits</span></h2>
+      <ul class="tips">
+        <li><strong>3-Phasen-Plan (neu bis Profi):</strong>
+          <ol>
+            <li><em>Start (Sidewinder/Hauler):</em> Kurier- &amp; Liefermissionen stapeln, Ruf pushen, kleine Frachtaufträge priorisieren.</li>
+            <li><em>Mitte (Cobra/Type-6/Dolphin):</em> Handelsschleifen oder Sightseeing; Datenmissionen fürs Ansehen.</li>
+            <li><em>Skalieren (Python/Type-7+/Orca):</em> Große Frachtermissionen, Mining oder hochbezahlte Passagierrouten – in Boom-Systemen suchen.</li>
+          </ol>
+        </li>
+        <li><strong>Boom &amp; Wirtschaft:</strong> Boom-Systeme, hohe Bevölkerung, passende Wirtschaftsart bevorzugen.</li>
+        <li><strong>Missionen stapeln:</strong> Auf Zielsystem filtern; Volumen/Art/Timer beachten.</li>
+        <li><strong>Sightseeing &amp; VIPs:</strong> <em>Passagierkabinen</em>; <em>Keine Scans</em>-VIPs meiden.</li>
+        <li><strong>Handelsschleife:</strong> Zwei nahe Systeme – Hinweg A, Rückweg B.</li>
+        <li><strong>Exploration-Boni:</strong> <span class="keys">DSS</span> für EAW/Wasserwelten/terraformierbare Planeten.</li>
+        <li><strong>RES &amp; Kopfgeld:</strong> <em>High-RES</em> mit Security.</li>
+        <li><strong>Mining:</strong> <em>Prospector</em>, Laser/Kern je nach Geduld.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Laser-Mining für Einsteiger: Platin/Schmerzit je nach Markt, 2–3 Mining‑Laser + Prospector‑Limpets; nur in Hotspots und möglichst keine überlappenden Felder. Verkauf nur bei hoher Nachfrage.</li><li>Exobiologie lohnt: Artemis‑Anzug besorgen, genetische Proben sammeln und bei Vista Genomics verkaufen. Erster Fußabdruck mit Leben („First Footfall“) zahlt besonders gut.</li><li>Neutronenroute nutzen: FSD im Neutronenkegel aufladen (Supercharge), Sprünge stark verkürzen – immer Heat Sinks dabeihaben.</li><li>Community Goals: auf obere Prozentränge spielen; bringen solide Credits und oft einzigartige Belohnungen.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>BGS‑Zustände ausnutzen: <em>Boom</em> (bessere Preise/Missionen), <em>Expansion</em>/<em>Investment</em> (mehr Aufträge), <em>Outbreak</em>/<em>War</em> (spezielle Güter/Missionen).</li><li>Missionen ketten: Nach Abgabe im Zielsystem sofort erneut filtern – oft erscheinen Anschlussaufträge mit Bonus.</li><li>Passagiere optimieren: VIPs mit <em>möglichst wenigen Zwischenstopps</em> und kurzer Distanz bevorzugen; Sicherheitsstufen der Route beachten (Scan‑Risiko).</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Lohnende Aufträge – Schnellstart</h3>
+        <div class="chips">
+          <span class="chip">Stacking</span><span class="chip">BGS</span><span class="chip">Zeit/Entfernung</span>
+        </div>
+        <ul class="tips">
+          <li><strong>Kurier &amp; Lieferungen:</strong> Mehrere Aufträge auf <em>ein Zielsystem</em> filtern und stapeln. In <em>Boom</em>-Systemen und bei <em>Verbündet</em> steigen die Payouts deutlich.</li>
+          <li><strong>Passagiere (Sightseeing):</strong> VIP/Business-Kabinen; kurze Rundflüge zwischen nahegelegenen Baken/Stationen bringen konstante Credits – <em>Keine Scans</em>-VIPs meiden, wenn die Route riskant ist.</li>
+          <li><strong>Wing-Lieferungen:</strong> Hohe Belohnung pro Auftrag; ideal mit großen Frachtern oder im Team. Auch solo machbar, wenn genügend Zeit und Laderaum vorhanden sind.</li>
+          <li><strong>„Beschaffe &amp; liefere“ (Source/Return):</strong> Ware legal am Markt kaufen und abgeben. Profit = Missionsbelohnung minus Einkaufskosten – lohnend bei hoher Nachfrage.</li>
+          <li><strong>Massaker/CZ-Aufträge:</strong> In <em>War/Civil War</em> stapeln; Kill-Ziele in Konfliktzonen erledigen. In einer <em>Wing</em> skaliert die Effizienz stark.</li>
+          <li><strong>Oberflächen-/Scan-/Wiederherstellungsmissionen:</strong> Bringen neben Credits wertvolle Materialien (für Ingenieure) – ideal, wenn du ohnehin Mats brauchst.</li>
+          <li><strong>Multiplikatoren:</strong> <em>Boom/Investment</em>, hohe <em>Bevölkerung</em>, <em>Verbündet</em>-Ruf, <em>kurze Distanzen</em> &amp; <em>Timer</em> ohne harte Deadlines ergeben bestes Verhältnis.</li>
+          <li><strong>Belohnungswahl:</strong> Wenn Credits stimmen, wähle <em>Materialien</em> statt Geld – spart später viel Farmzeit.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Lohnende Aufträge – Überblick (Tabelle)</h3>
+        <table class="hud-table" role="table" aria-label="Überblick lohnender Auftragstypen">
+          <thead>
+            <tr role="row">
+              <th role="columnheader">Auftragstyp</th>
+              <th role="columnheader">Beste Phase</th>
+              <th role="columnheader">Voraussetzungen</th>
+              <th role="columnheader">Risiko</th>
+              <th role="columnheader">Besonderheiten</th>
+              <th role="columnheader">Stundenverdienst</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr role="row">
+              <td>Kurier/Daten</td>
+              <td>Früh</td>
+              <td>Schnelles Schiff; kleiner Laderaum reicht</td>
+              <td>Niedrig</td>
+              <td>Sehr schnell; ideal zum <em>Ruf</em>-Pushen (später bessere Payouts)</td>
+              <td class="stars">★★★☆☆</td>
+            </tr>
+            <tr role="row">
+              <td>Lieferung (Cargo)</td>
+              <td>Früh–Mitte</td>
+              <td>Frachtraum; mittlere Reichweite</td>
+              <td>Niedrig–Mittel</td>
+              <td>Fixe Belohnung; <em>Stacking</em> auf gleiches Zielsystem sehr effizient</td>
+              <td class="stars">★★★☆☆–★★★★☆</td>
+            </tr>
+            <tr role="row">
+              <td>Wing-Lieferung</td>
+              <td>Mitte–Spät</td>
+              <td>Großer Frachter oder Team</td>
+              <td>Mittel</td>
+              <td>Sehr hohe Einzelbelohnungen; Timer beachten, Piratengefahr</td>
+              <td class="stars">★★★★☆–★★★★★</td>
+            </tr>
+            <tr role="row">
+              <td>Beschaffe &amp; liefere (Source/Return)</td>
+              <td>Mitte</td>
+              <td>Kapital für Einkauf; Marktkenntnis</td>
+              <td>Mittel</td>
+              <td>Profit = Missionsbelohnung − Einkauf; ideal bei <em>Nachfrage hoch</em></td>
+              <td class="stars">★★★☆☆–★★★★☆</td>
+            </tr>
+            <tr role="row">
+              <td>Passagiere (Sightseeing/VIP)</td>
+              <td>Mitte</td>
+              <td>Passagierkabinen; saubere Lizenz</td>
+              <td>Niedrig–Mittel</td>
+              <td>Kurzrouten zu Baken/POIs sehr konstant; <em>Keine Scans</em>-VIPs meiden</td>
+              <td class="stars">★★★☆☆–★★★★☆</td>
+            </tr>
+            <tr role="row">
+              <td>Massaker/CZ</td>
+              <td>Mitte–Spät</td>
+              <td>Kampfschiff; CZ-Erfahrung</td>
+              <td>Mittel–Hoch</td>
+              <td>Mit Wing skalierbar; parallel Bounties/Combat Bonds farmen</td>
+              <td class="stars">★★★★☆</td>
+            </tr>
+            <tr role="row">
+              <td>Oberflächen-/Scan-/Wiederherstellung</td>
+              <td>Früh–Mitte</td>
+              <td>SRV/On-Foot-Ausrüstung</td>
+              <td>Niedrig–Mittel</td>
+              <td>Zusätzliche Materialien für Ingenieure – spart Farmzeit</td>
+              <td class="stars">★★★☆☆</td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="legend"><strong>Hinweis:</strong> Der relative Stundenverdienst hängt stark von <em>Ruf</em>, <em>BGS</em>-Zuständen (Boom/War etc.), <em>Entfernung</em> und deinem <em>Schiff</em> ab.</p>
+      </article>
+
+      <article class="card">
+        <h3>Beispielrouten & Missions-Schleifen (Vorlagen)</h3>
+        <ul class="tips">
+          <li><strong>Handelsschleife (2–10 ly):</strong> <em>High Tech</em> ↔ <em>Extraction/Refinery</em>. Hinweg Elektronik/Industriegüter, Rückweg Rohstoffe/Metalle. Große, bevölkerte Stationen bevorzugen.</li>
+          <li><strong>Lieferungs-Stack:</strong> Board auf ein Zielsystem filtern, 4–8 Liefermissionen annehmen, alles in einem Schwung abgeben. Rückweg neue Missionen mitnehmen.</li>
+          <li><strong>Passagier-Kurzroute:</strong> Station &lt;→ Touristenbake &lt;→ Station. 1–2 Sprünge, geringe SC-Zeit, Business/VIP-Kabinen.</li>
+          <li><strong>Source/Return:</strong> Ware am günstigsten Markt einkaufen (Wirtschaftstypen prüfen), sofort zurückliefern – Timer im Blick behalten.</li>
+          <li><strong>CZ-Duo:</strong> In <em>War/Civil War</em> Systeme mit nahen Konfliktzonen wählen; Massaker-Missionen stapeln, dann in 1–2 CZs abarbeiten.</li>
+          <li><strong>On-Foot-Loop:</strong> Wiederherstellungs-/Versorgungsmissionen auf nahe Siedlungen, Materialien looten, bei Bedarf sofort beim Materialhändler tauschen.</li>
+        </ul>
+      </article>
+    
+</section>
+
+    <section id="handel" class="panel" role="tabpanel" aria-labelledby="tab-handel" tabindex="0" aria-hidden="true">
+      <h2>Handel &amp; Transport <span class="badge">Profit</span></h2>
+      <ul class="tips">
+        <li><strong>Angebot vs. Nachfrage:</strong> Kaufen, wo Angebot hoch; verkaufen, wo Nachfrage hoch.</li>
+        <li><strong>Großhäfen:</strong> Beste Preise/Missionen; <em>Pad-Größe</em> beachten.</li>
+        <li><strong>Schmuggel:</strong> Wärme senken, <em>Silent Running</em> + <em>Hitzesenke</em>, direkt Landeerlaubnis.</li>
+        <li><strong>Rückweg füllen:</strong> Nie leer fliegen.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Zwei‑Wege‑Schleifen planen: High Tech ↔ Extraction/Refinery, hohe Bevölkerung und Boom‑Zustand bevorzugen.</li><li>Auftragsstapel: Missionsboard auf dasselbe Zielsystem filtern; mit Ruf „Verbündet“ steigen Payouts deutlich.</li><li>Schmuggel: In Anarchie‑Häfen drohen keine Behörden‑Scans – aber heißer Anflug, Hitzesenkeen & Silent Running vorbereiten.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Nachfrage puffern: Kleine Mengen hochpreisiger Güter verkaufen, um den Preis nicht sofort zu drücken; große Ladungen auf mehrere Stationen aufteilen.</li><li>Fraktionsruf gezielt: Ein System wählen und dort konsequent liefern, bis du <em>Verbündet</em> bist – Payouts und Board‑Qualität steigen.</li><li>Anarchie‑Häfen für riskante Ware: Keine Behörden‑Scans, aber mit heißem Anflug rechnen (Silent Running + Hitzesenke).</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Lohnende Liefer-/Beschaffungsaufträge</h3>
+        <div class="chips">
+          <span class="chip">Mission-Cargo</span><span class="chip">Payout/Tonne</span><span class="chip">Ruf</span>
+        </div>
+        <ul class="tips">
+          <li><strong>Mission vs. freier Handel:</strong> Missionsfracht belegt Laderaum, ist aber <em>preisunabhängig</em> – du kassierst die fixe Belohnung plus ggf. Bonus.</li>
+          <li><strong>Payout pro Tonne:</strong> Vergleiche Belohnung je t und die <em>Gesamtdauer</em> (inkl. Supercruise). Kürzere Wege schlagen oft höhere Einzelpreise.</li>
+          <li><strong>Schleifen bauen:</strong> Hinweg Missionslieferungen, Rückweg Marktware oder weitere Missionen – so fliegst du selten leer.</li>
+          <li><strong>Wing-Lieferungen:</strong> Besonders lukrativ mit Large-Pad-Schiffen (z. B. Cutter/Clipper). Achtung Timer und Piratenbedrohung.</li>
+          <li><strong>Beschaffungsaufträge:</strong> Vor dem Annehmen prüfen, ob die Ware regional verfügbar ist; High-Tech ↔ Extraction/Refinery-Paare funktionieren oft gut.</li>
+          <li><strong>Ruf steigern:</strong> Erst „Ruf+“ als Belohnung wählen, dann später „Credits+“ – der Board skaliert mit deinem Verhältnis zu den Fraktionen.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Liefermissionen – auf einen Blick</h3>
+        <table class="hud-table" role="table" aria-label="Überblick Liefermissionen">
+          <thead>
+            <tr><th>Typ</th><th>Wann gut</th><th>Tipps</th><th>Risiko</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Kurier (Daten)</td><td>Frühe Ruf-/Board-Optimierung</td><td>Mehrere Systeme in einer Linie nehmen</td><td>Niedrig</td></tr>
+            <tr><td>Lieferung (Cargo)</td><td>Früh–Mitte</td><td>Auf gleiches Zielsystem stacken; kurze SC-Zeiten</td><td>Niedrig–Mittel</td></tr>
+            <tr><td>Wing-Lieferung</td><td>Mitte–Spät</td><td>Großer Frachter oder Team; Timer beachten</td><td>Mittel</td></tr>
+            <tr><td>Source/Return</td><td>Mitte</td><td>Vorher Verfügbarkeit &amp; Nachfrage prüfen</td><td>Mittel</td></tr>
+          </tbody>
+        </table>
+      </article>
+    
+</section>
+
+    <section id="erkundung" class="panel" role="tabpanel" aria-labelledby="tab-erkundung" tabindex="0" aria-hidden="true">
+      <h2>Erkundung <span class="badge">Kartografie</span></h2>
+      <ul class="tips">
+        <li><strong>Nach Ankunft:</strong> <em>Honken</em>, dann <em>FSS</em>.</li>
+        <li><strong><span class="keys">DSS</span>:</strong> Für Kartierung/Bonus – EAW &amp; terraformierbare Welten.</li>
+        <li><strong>Neutronen:</strong> Boost nutzen, danach abkühlen (<em>Heat Sinks</em>).</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Workflow: FSS zum Aufspüren, DSS zum Kartieren; Wasserwelten, Erdähnliche und terraformierbare Welten priorisieren.</li><li>Neutronen‑Autobahn: Für Langstrecke den FSD per Neutron boosten, danach aktiv abkühlen.</li><li>Exobiologie unterwegs mitnehmen: unentdeckte Bio‑Signale anfliegen, Proben mit dem Gen‑Sampler nehmen und später bei Vista Genomics abgeben.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>FSD‑Gesundheit im Blick: Bei Neutronenrouten <em>AFMU</em> (Automatisches Feldinstandhaltungsmodul) mitführen und außerhalb des Supercruise reparieren.</li><li>Weiße Zwerge: Bieten ebenfalls Boost, aber mit höherem Risiko für <em>Dropouts</em> – nur mit Heat‑Reserven und Abstand probieren.</li><li>Kartografieren effizient: DSS‑Sonden so setzen, dass sie sich an Kanten überlappen; die angezeigte „Empfohlene Zahl“ lässt sich oft unterschreiten.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="kampf" class="panel" role="tabpanel" aria-labelledby="tab-kampf" tabindex="0" aria-hidden="true">
+      <h2>Kampf <span class="badge">Bounty &amp; CZ</span></h2>
+      <ul class="tips">
+        <li><strong>Pip-Management:</strong> <span class="keys">SYS</span>/<span class="keys">ENG</span>/<span class="keys">WEP</span> dynamisch.</li>
+        <li><strong>High-Wake:</strong> Systemsprung statt Notstopp.</li>
+        <li><strong>Waffenmix:</strong> Kinetisch vs. Hülle, Laser vs. Schild; Rails/Plasma Burst.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>RES‑Auswahl: In High‑RES mit Security starten; Hazardous‑RES nur mit starkem Build und Erfahrung.</li><li>Subsystem‑Fokus: Gegen Großschiffe gezielt auf Kraftwerk/Triebwerke; Rails/Plasma für kontrollierten Burst‑Schaden.</li><li>FA‑Off in kurzen Impulsen nutzen, um auszubrechen oder zu wenden – nicht dauerhaft, wenn du Präzision brauchst.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Pip‑Tanz: Standardmuster <em>4‑0‑2</em> (SYS‑ENG‑WEP) beim Einflug, <em>2‑2‑2</em> im Dogfight, <em>0‑4‑2</em> beim Verfolgen schneller Ziele.</li><li>Fixed‑Waffen: Auf Leitkreuz/Bewegung voraushalten; <em>FA‑Off‑Drifts</em> kurzzeitig einsetzen, um Winkelvorteile zu erzwingen.</li><li>Subsysteme priorisieren: Gegen Großschiffe Kraftwerk/Triebwerke zuerst; bei Flucht Gegner‑FSD stören, um Zeit zu gewinnen.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="bergbau" class="panel" role="tabpanel" aria-labelledby="tab-bergbau" tabindex="0" aria-hidden="true">
+      <h2>Bergbau <span class="badge">Laser &amp; Kern</span></h2>
+      <ul class="tips">
+        <li><strong>Setup:</strong> <em>Prospector</em> + <em>Sammler-Limpets</em>, Refinery-Bins/Laderaum passend.</li>
+        <li><strong>Kernbergbau:</strong> Gleichmäßig laden, im <em>grünen Bereich</em> zünden; <em>Abrasion Blaster</em>.</li>
+        <li><strong>Laser-Mining:</strong> Hotspots mit hoher Dichte; Prospector zuerst.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Kernbergbau: Pulse Wave Analyzer verwenden; „atmende“/hell pulsierende Brocken suchen, dann Fissures passend (Low/Med/High) laden und im grünen Bereich zünden.</li><li>Laser‑Mining: Prospector‑Limpet zeigt Gehalt – Material <~20 % meist überspringen. Mehrere Mining‑Laser + Sammler‑Limpets beschleunigen.</li><li>Limpets einplanen: grob ein Drittel deines Frachtraums als Limpets mitnehmen; unterwegs bei Bedarf nachkaufen.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Sub‑Surface‑Mining: <em>Sub‑Surface Displacement Missiles</em> für Vorkommen unter der Oberfläche; beim Minispiel die Resonanzkurve mittig halten.</li><li>Kernbergbau‑Details: Fissure‑Stufen (Low/Med/High) passend laden und gleichmäßig verteilen; erst zünden, wenn der Marker im <em>grünen Bereich</em> ist.</li><li>Laser‑Mining effizient: Prospector‑Limpet vor jedem Brocken; Ertrag < ~20 % meist überspringen; Sammler‑Limpets ~⅓ des Laderaums einplanen.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="navigation" class="panel" role="tabpanel" aria-labelledby="tab-navigation" tabindex="0" aria-hidden="true">
+      <h2>Navigation &amp; Supercruise <span class="badge">Reise</span></h2>
+      <ul class="tips">
+        <li><strong>7-Sekunden-Regel:</strong> Drosseln &gt; 7 s Ankunftszeit.</li>
+        <li><strong>Tanken:</strong> <em>Fuel Scoop</em> + Routen mit Scoop-Sternen (<span class="keys">KGB FOAM</span>).</li>
+        <li><strong>Notstopp:</strong> Bei Schwerefeldern rechtzeitig wegsteuern.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Routen‑Modi: Ökonomisch für viele Scans/Signale, Schnellroute für zügige Reisen. Für Neutronen die Karte/Filter entsprechend anpassen.</li><li>Interdiction: Entweder sofort sauber ausmanövrieren (Gegenkurs, 4 Pips SYS) oder kontrolliert nachgeben und direkt High‑Wake vorbereiten.</li><li>Supercruise‑Anflug: In der 7‑Sekunden‑Zone drosseln; Ziel exakt ansteuern, Schwerefelder antizipieren.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Schwerefelder nutzen: <em>Gravity Braking</em> am Zielplaneten spart Zeit – früh in den Orbit und dann abfallen lassen.</li><li>Interdiction‑Management: Gegensteuerung bis in den blauen Bereich halten; wenn verloren, sofort <em>High‑Wake</em> einleiten (Systemsprung vorbereitet).</li><li>Notstopp sicher: Bei zu schnellem Anflug rechtzeitig vom Ziel wegziehen und parallel drosseln, um Überhitzung zu vermeiden.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="ingenieure" class="panel" role="tabpanel" aria-labelledby="tab-ingenieure" tabindex="0" aria-hidden="true">
+      <h2>Ingenieure <span class="badge">Alles was du brauchst</span></h2>
+      <div class="cards">
+        <article class="card">
+          <h3>So funktionieren Ingenieure</h3>
+          <ul class="tips">
+            <li><strong>Einladung &amp; Freischalten:</strong> Einladung erhalten → Freischalt-Bedingung erfüllen (Item liefern, Ruf, etc.).</li>
+            <li><strong>Ruf:</strong> Craften steigert Ruf (G1→G5).</li>
+            <li><strong>Blueprints &amp; Pinning:</strong> Blueprint wählen, pinnen, später remote craften.</li>
+            <li><strong>Experimentelle Effekte:</strong> Z. B. <em>Corrosive</em>, <em>Thermal Conduit</em>.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Roadmap</h3>
+          <ul class="tips">
+            <li><strong>Früh:</strong> <em>FSD Reichweite</em>, Leichtbau, <em>Power Distributor</em>.</li>
+            <li><strong>Mitte:</strong> <em>Thruster</em>, <em>Schilde</em>/<em>Boosters</em>, Waffen (Efficient/Overcharged/Long Range).</li>
+            <li><strong>Spät:</strong> Feintuning, Guardian-FSD-Booster, AX-Spezial.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Materialien &amp; Tausch</h3>
+          <ul class="tips">
+            <li><strong>Kategorien:</strong> Raw (Geologie), Manufactured (Signalquellen/Schiffe), Encoded (Daten/Wakes).</li>
+            <li><strong>Trader:</strong> Tausch innerhalb einer Kategorie; abwerten ist günstiger.</li>
+            <li><strong>Missionen:</strong> Material-Belohnungen gezielt wählen.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Schnell farmen</h3>
+          <ul class="tips">
+            <li><strong>Encoded:</strong> <em>Wake Scanner</em> + Station-Ausfahrten; Installations-Datenpunkte.</li>
+            <li><strong>Manufactured:</strong> <em>HGE</em>, RES/CZ-Kämpfe droppen Bauteile.</li>
+            <li><strong>Raw:</strong> <em>SRV</em> bei geologischen Signalen.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Guardian-Tech &amp; Tech-Broker</h3>
+          <ul class="tips">
+            <li><strong>FSD-Booster:</strong> Ruinen → Pylonen → Blueprint → Broker → Einbau.</li>
+            <li><strong>Weitere Module:</strong> Schilde/Waffen ebenso; SRV-Muni &amp; Relikte einplanen.</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Checkliste</h3>
+          <ul class="tips">
+            <li>FSD-Blueprint pinnen → Materialmix farmen → Trader nutzen → Guardian-Booster holen → Core-Module upgraden.</li>
+          </ul>
+        </article>
+      </div>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Frühmobilisierung: Mit Felicity Farseer starten (Rang „Scout“, 1× Meta‑Alloy) – FSD‑Reichweite zuerst verbessern (Farseer Inc, Deciat).</li><li>Guardian‑FSD‑Booster freischalten: 1× Guardian‑Modul‑Blueprint, 21× Guardian Power Cell, 21× Guardian Technology Component, 24× Focus Crystals, 8× HN Shock Mount beim Tech‑Broker abgeben.</li><li>Encoded‑Daten schnell: Jameson‑Wrack (HIP 12099 1b) scannen, anschließend bei Daten‑Tradern in benötigte Stufen tauschen.</li><li>On‑Foot‑Materialien: Reaktivierungs‑/Wiederherstellungsmissionen liefern Power Regulator etc.; Anzüge/Waffen danach beim Ingenieur upgraden.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Effekt‑Kombinationen: <em>Corrosive</em> auf Multicannons + <em>Thermal Vent</em> auf Lasern für Hitzeregulierung; <em>Feedback Cascade</em> gegen Schildzellen.</li><li>Roll‑Ökonomie: Nicht jeden Wert auf Maximum; oft reichen <em>gute</em> G5‑Würfe – spare seltene Materialien für mehrere Module.</li><li>Remote‑Engineering: Nur gepinnte Blueprints; experimentelle Effekte erfordern Vor‑Ort‑Besuch.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="schiffe" class="panel" role="tabpanel" aria-labelledby="tab-schiffe" tabindex="0" aria-hidden="true">
+      <h2>Schiffe &amp; Ausrüstung <span class="badge">Ausrüstungen</span></h2>
+      <ul class="tips">
+        <li><strong>Reaktor &amp; Verteiler:</strong> Bestimmen die echte Leistungsfähigkeit – nicht zu knapp dimensionieren.</li>
+        <li><strong>Schilde vs. Hülle:</strong> PvE: starke Schilde; PvP/AX: oft Hülle + <em>HRPs</em>.</li>
+        <li><strong>Leichtbau &amp; Reichweite:</strong> Nicht-kampfrelevante Module auf Leichtbau; <em>FSD-Mod</em>.</li>
+        <li><strong>Utilitys:</strong> <em>Heat Sinks</em> &amp; <em>Chaff</em> erhöhen Überleben stark.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Thruster‑Upgrades: „Dirty Drives“ für Agilität (mehr Hitze), „Clean“ für kühlere Builds/heavy Trader.</li><li>Schilde: Bi‑Weave für PvE (schnelle Regeneration), Prismatic für extremes Schild‑Tanking (Powerplay, hoher Energiebedarf).</li><li>Gewicht sparen: Wo möglich D‑Rating; Ausnahmen je nach Build (z. B. Sensoren nicht zu klein, Life‑Support pragmatisch).</li><li>Widerstände sinnvoll mischen statt zu „stacken“, um Gesamteffekt zu maximieren.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Mass‑Lock‑Faktor beachten: Große Schiffe halten dich leichter im Normalraum – Fluchtweg per Systemsprung vorbereiten.</li><li>Scan‑Sicherheit beim Schmuggel: >350 m/s vor Stationseinflug, heißer Anflug (Silent Running + Hitzesenke) nur kurz.</li><li>Widerstände balancieren: Thermisch/Kinetisch/Explosiv nicht einseitig maximieren; gleichmäßig verteilen ergibt oft die beste EHP.</li>
+        </ul>
+      </article>
+    
+    </section>
+
+    <section id="geld" class="panel" role="tabpanel" aria-labelledby="tab-geld" tabindex="0" aria-hidden="true">
+      <h2>Geld &amp; Rang <span class="badge">Fortschritt</span></h2>
+      <ul class="tips">
+        <li><strong>Fraktionsmissionen:</strong> Konsequent für eine Fraktion liefern – bessere Belohnungen &amp; Zugang.</li>
+        <li><strong>Passagiere:</strong> Business/Luxus-Kabinen auf Touristenrouten – scansensibel.</li>
+        <li><strong>Community-Goals:</strong> Regeln lesen; Beiträge sichern.</li>
+      </ul>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Exobiologe‑Rang & Credits: Proben bei Vista Genomics verkaufen; ungekreuzte Welten mit Leben zuerst anfliegen („First Footfall“ Bonus).</li><li>Kampf‑Rang: Hazardous‑RES/CZ; Kopfgelder regelmäßig einlösen (ggf. Kill Warrant Scanner).</li><li>Handels‑Rang: Massentransporte & Community Goals; Missionsfracht zählt stark fürs Ranking.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Ränge gezielt pushen: <em>Federation/Empire</em> mit Daten‑/Liefermissionen in Verbündet‑Systemen – freischaltet Schiffe & Rabatte.</li><li>Community‑Goals: Früh liefern, dann zum Ende nachschieben, um in höhere Prozent‑Tiers zu kommen; Belohnungen rechtzeitig abholen.</li>
+        </ul>
+      </article>
+
+      <article class="card">
+        <h3>Auftrags-Optimierung für Credits &amp; Rang</h3>
+        <div class="chips">
+          <span class="chip">Ruf-Scaling</span><span class="chip">Belohnungswahl</span><span class="chip">Routen</span>
+        </div>
+        <ul class="tips">
+          <li><strong>„Verbündet“ zuerst:</strong> Erledige 10–15 schnelle <em>Daten-/Kuriermissionen</em> für eine Fraktion und nimm „Ruf+“. Danach steigen die Payouts aller Aufträge deutlich.</li>
+          <li><strong>Supermacht-Ränge:</strong> Für Empire/Federation primär in deren Einflussgebieten liefern. Rangaufstiegsmissionen erscheinen, sobald genug Ruf vorhanden ist.</li>
+          <li><strong>Board-Qualität:</strong> Große/verkehrsreiche Stationen zeigen mehr und besser bezahlte Aufträge – besonders in <em>Boom</em>.</li>
+          <li><strong>Belohnungen clever:</strong> Häufig <em>Materialien</em> wählen (Encoded/Manufactured), wenn Credits kein Engpass sind – beschleunigt Ingenieur-Fortschritt und erhöht mittelbar deinen Stundenverdienst.</li>
+          <li><strong>Risiko managen:</strong> „Keine Scans“/illegale Missionen nur mit Hitzesenke + Silent Running und sicherem Anflug – sonst lieber legale Alternativen.</li>
+        </ul>
+      </article>
+
+
+    
+    </section>
+
+    <section id="schiffe-zweck" class="panel" role="tabpanel" aria-labelledby="tab-schiffe-zweck" tabindex="0" aria-hidden="true">
+      <h2>Schiffe nach Zweck <span class="badge">Empfehlungen</span></h2>
+      <div class="ship-filters" role="toolbar" aria-label="Filter">
+        <button class="filter-btn active" data-filter="alle" type="button">Alle</button>
+        <button class="filter-btn" data-filter="handel" type="button">Handel</button>
+        <button class="filter-btn" data-filter="kampf" type="button">Kampf</button>
+        <button class="filter-btn" data-filter="erkundung" type="button">Erkundung</button>
+        <button class="filter-btn" data-filter="bergbau" type="button">Bergbau</button>
+        <button class="filter-btn" data-filter="passagiere" type="button">Passagiere</button>
+        <button class="filter-btn" data-filter="ax" type="button">AX (Anti‑Xeno)</button>
+        <button class="filter-btn" data-filter="allround" type="button">Alleskönner</button>
+      </div>
+      <div class="ship-cards">
+        <article class="card ship-card" data-tags="allround,handel,start">
+          <h3>Cobra Mk III – Alleskönner‑Start</h3>
+          <div class="chips"><span class="chip">Budget</span><span class="chip">Schnell</span><span class="chip">Vielseitig</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Frühe Handelsschleifen, Kuriermissionen, leichte Kopfgeldjagd.</li>
+            <li><strong>Warum:</strong> Gute Geschwindigkeit, akzeptabler Laderaum, günstige Versicherung.</li>
+            <li><strong>Hinweise:</strong> <em>FSD</em> früh upgraden; 1–2 <em>Cargo-Racks</em>, kleiner <em>Shield</em>, <em>Fuel Scoop</em>.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="kampf">
+          <h3>Vulture – PvE-Kampf</h3>
+          <div class="chips"><span class="chip">Agil</span><span class="chip">Starker Schild</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> RES/Bounty-Hunting, CZ-Einsteiger.</li>
+            <li><strong>Warum:</strong> Überragende Wendigkeit, starke Hardpoints.</li>
+            <li><strong>Hinweise:</strong> Strommanagement; <em>Bi-Weave</em> + <em>Boosters</em>.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="erkundung,allround">
+          <h3>Diamondback Explorer – Erkundung</h3>
+          <div class="chips"><span class="chip">Reichweite</span><span class="chip">Kühl</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Tiefen-Erkundung, Guardian-Runs.</li>
+            <li><strong>Warum:</strong> Sehr effiziente Sprungreichweite, niedrige Hitze.</li>
+            <li><strong>Hinweise:</strong> <em>DSS</em>, <em>AFMU</em>, leichte Module; <em>Heat Sinks</em> für Neutronen.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="handel,allround,passagiere">
+          <h3>Python – Multirole-Arbeitstier</h3>
+          <div class="chips"><span class="chip">Medium-Pad</span><span class="chip">Große Fracht</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Missions-Handel, BGS, Passagier-Kurzstrecken.</li>
+            <li><strong>Warum:</strong> Landet auf <em>Medium-Pads</em> mit viel Nutzlast.</li>
+            <li><strong>Hinweise:</strong> Kampf: <em>Bi-Weave</em> + Boosters; Handel: maximale <em>Cargo-Racks</em>.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="erkundung">
+          <h3>Asp Explorer – Komfort-Explorer</h3>
+          <div class="chips"><span class="chip">Weit</span><span class="chip">Sicht</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Langstrecken-Touren.</li>
+            <li><strong>Warum:</strong> Tolle Cockpitsicht, modulare Slots.</li>
+            <li><strong>Hinweise:</strong> <em>Scanners</em>, <em>SRV-Hangar</em>, <em>AFMU</em>, leicht bauen.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="kampf,allround">
+          <h3>Krait Mk II – PvE/PvP-Hybrid</h3>
+          <div class="chips"><span class="chip">Jägerhangar</span><span class="chip">Vielseitig</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Kopfgeld, Mission-Kampf, leichte AX.</li>
+            <li><strong>Warum:</strong> Gute Hardpoints, Jägerhangar-Option.</li>
+            <li><strong>Hinweise:</strong> <em>Gimbals</em> + <em>Chaff</em>; <em>HRPs</em> oder starke Schilde.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="handel,bergbau,allround">
+          <h3>Phanter Clipper – Schneller Multi-Frachter</h3>
+          <div class="chips"><span class="chip">Schnell</span><span class="chip">Großes Pad</span><span class="chip">Vielseitig</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Handelsschleifen, Missions-Transport, Laser-/Oberflächen-Mining, BGS-Aufträge.</li>
+            <li><strong>Warum:</strong> Sehr hohe Geschwindigkeit für ein Large-Pad-Schiff, ordentliche Nutzlast, gute Hardpoints für Selbstschutz.</li>
+            <li><strong>Hinweise:</strong> Benötigt <em>imperialen Rang</em>; landet nur auf <em>Large Pads</em>. Mining: <em>Prospector</em> + <em>Sammler</em>, <em>Refinery</em>, 1–2 <em>Mining-Laser</em>, <em>Abrasion Blaster</em>. Handel: maximale <em>Cargo Racks</em>, kleiner Schild, <em>FSD/Thruster/Distributor</em>-Upgrades.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="handel">
+          <h3>Type-9 – Schwerer Frachter</h3>
+          <div class="chips"><span class="chip">Massiv</span><span class="chip">Große Ladung</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Große Handelsschleifen, CG-Lieferungen.</li>
+            <li><strong>Warum:</strong> Maximale Nutzlast im PvE.</li>
+            <li><strong>Hinweise:</strong> <em>geschützte Fracht</em> knapp; <em>Gier (FA‑Off)</em> üben.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="passagiere,handel">
+          <h3>Orca – Passagiere</h3>
+          <div class="chips"><span class="chip">Luxus</span><span class="chip">Schnell</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Sightseeing-VIPs &amp; Baken.</li>
+            <li><strong>Warum:</strong> Edle Kabinen, gute Reichweite.</li>
+            <li><strong>Hinweise:</strong> <em>Business/Luxus</em>-Kabinen; Scans meiden.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="ax,kampf">
+          <h3>Alliance Chieftain – AX-Kampf</h3>
+          <div class="chips"><span class="chip">Wendig</span><span class="chip">Hülle</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Thargoid-Jagd.</li>
+            <li><strong>Warum:</strong> Starker Rumpf, gute Wärmeverteilung.</li>
+            <li><strong>Hinweise:</strong> AX-Waffen, <em>Abschaltfeld‑Neutralisator</em>, <em>Heatsinks</em>, <em>HRPs</em>.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="handel,allround">
+          <h3>Imperial Cutter – Handels-Spätphase</h3>
+          <div class="chips"><span class="chip">Riesige Fracht</span><span class="chip">Schild-Tank</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Hochprofitabler Handel, CG-Massenlieferungen.</li>
+            <li><strong>Warum:</strong> Größte Nutzlast mit starken Schilden.</li>
+            <li><strong>Hinweise:</strong> Lange Bremswege; <em>Thrusters</em> &amp; <em>Power Distributor</em> hochwertig.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="kampf">
+          <h3>Federal Corvette – Kampf-Spätphase</h3>
+          <div class="chips"><span class="chip">Boss-Jäger</span><span class="chip">Schwer</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> High-End-Bounties, CZ-High.</li>
+            <li><strong>Warum:</strong> Brutale Feuerkraft, starker Schild.</li>
+            <li><strong>Hinweise:</strong> Teurer Rebuy – Puffer einplanen.</li>
+          </ul>
+        </article>
+
+        <article class="card ship-card" data-tags="erkundung">
+          <h3>Anaconda – Langstrecken-Explorer</h3>
+          <div class="chips"><span class="chip">Sehr weit</span><span class="chip">Modular</span></div>
+          <ul class="tips">
+            <li><strong>Einsatz:</strong> Deep-Space-Touren.</li>
+            <li><strong>Warum:</strong> Extrem große Sprungreichweite mit Leichtbau.</li>
+            <li><strong>Hinweise:</strong> <em>Leichtbau</em>, <em>Guardian-FSD-Booster</em>, <em>AFMU</em>, <em>SRV</em>.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section id="stationen" class="panel" role="tabpanel" aria-labelledby="tab-stationen" tabindex="0" aria-hidden="true">
+      <h2>Stationen-Bau &amp; Carrier <span class="badge">Logistik</span></h2>
+      <div class="cards">
+        <article class="card">
+          <h3>Grundlagen &amp; Planung</h3>
+          <div class="chips">
+            <span class="chip">Budget</span><span class="chip">Standort</span><span class="chip">Wirtschaft</span>
+          </div>
+          <ul class="tips">
+            <li><strong>Ziel definieren:</strong> Handelshub, PvE-Drehscheibe, Expeditionsbasis oder Mining-Outpost? Danach richten sich Services &amp; Lage.</li>
+            <li><strong>Standortwahl:</strong> Nähe zu <em>Scoop-Sternen</em>, <em>RES</em>, <em>Interstellar Factors</em>, <em>High-Tech</em>-Märkten und gut angebundenen Systemen.</li>
+            <li><strong>Ruf &amp; BGS:</strong> Mit einer Fraktion arbeiten (<em>BGS</em>) → Einfluss &amp; bessere Missionen/Preise.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Fleet Carrier</h3>
+          <div class="chips">
+            <span class="chip">Services</span><span class="chip">Sprünge</span><span class="chip">Tritium</span>
+          </div>
+          <ul class="tips">
+            <li><strong>Services modular:</strong> <em>Outfitting</em>, <em>Shipyard</em>, <em>Redemption Office</em>, <em>Vista Genomics</em> je nach Zielgruppe.</li>
+            <li><strong>Wirtschaft:</strong> Gebühren moderat halten.</li>
+            <li><strong>Sprunglogistik:</strong> 500-ly-Raster planen; Fracht sichern; Abflugzeiten kommunizieren.</li>
+            <li><strong>Tritium:</strong> Vorrat + Kauforders; Mining-Events im Hotspot.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Stationen &amp; Siedlungen</h3>
+          <div class="chips">
+            <span class="chip">On-Foot</span><span class="chip">Energie</span><span class="chip">Missionen</span>
+          </div>
+          <ul class="tips">
+            <li><strong>Versorgung:</strong> Industrie/Versorgungs-Missionen pushen Handel der Region.</li>
+            <li><strong>Stabilität:</strong> Bei <em>Ausfällen/Konflikten</em> helfen → Region stabilisiert.</li>
+            <li><strong>On-Foot-Mats:</strong> Für Anzug/Waffen-Upgrades sammeln.</li>
+          </ul>
+        </article>
+      </div>
+      <article class="card">
+        <h3>Community-Pro-Tipps <span class="badge">übersetzt</span></h3>
+        <ul class="tips">
+          <li>Explorer‑Services ziehen Traffic: Universal Kartografie & Vista Genomics einbauen, Gebühren moderat halten.</li><li>Carrier‑Betrieb: Sprungzeiten ankündigen; Tritium per Kauforders sichern; Routen mit Tools/Planern vorab kalkulieren.</li><li>Bodenmissionen in der Region (Reaktivierung, Versorgung) stabilisieren die Wirtschaft und erhöhen Missionsaufkommen.</li>
+        </ul>
+      </article>
+    
+      <article class="card">
+        <h3>Fortgeschrittene Techniken</h3>
+        <ul class="tips">
+          <li>Carrier‑Arbitrage: Kauf‑/Verkaufsaufträge so setzen, dass Piloten Gewinn machen, du aber eine kleine Marge behältst – Gebühren nicht zu hoch.</li><li>Sprung‑Fenster: Feste Zeiten in der Staffel kommunizieren; Tritium‑Beteiligung belohnen (Rabatte/Bonus).</li><li>Sicherheitsprofil: In gefährlichen Gebieten <em>Rearm/Repair/Refuel</em> priorisieren und Notfall‑Loadouts bereithalten.</li>
+        </ul>
+      </article>
+    
+    </section>
+  </main>
+
+  <script>
+    (function(){
+      const buttons = Array.from(document.querySelectorAll('.tab-btn'));
+      const panels  = Array.from(document.querySelectorAll('.panel'));
+
+      function showPanel(id){
+        // Update active button
+        buttons.forEach(btn => {
+          const isActive = btn.dataset.target === id;
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          btn.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+        // Update panels
+        panels.forEach(p => {
+          const show = p.id === id;
+          p.classList.toggle('active', show);
+          p.setAttribute('aria-hidden', show ? 'false' : 'true');
+        });
+        // store & update hash
+        try { localStorage.setItem('ed_tips_active', id); } catch(e){}
+        if(location.hash !== '#'+id){ history.replaceState(null,'','#'+id);
+        // scroll active tab into view on narrow screens
+        const active = document.querySelector('.tabs .tab-btn.active');
+        if(active && typeof active.scrollIntoView === 'function'){
+          active.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'});
+        }
+      }
+      }
+
+      // Click handlers
+      buttons.forEach(btn=>{
+        btn.addEventListener('click', () => showPanel(btn.dataset.target));
+      });
+
+      // Load from hash or storage
+      const fromHash = location.hash ? location.hash.replace('#','') : null;
+      const fromStore = (()=>{ try { return localStorage.getItem('ed_tips_active'); } catch(e){ return null; } })();
+      const initial = panels.some(p => p.id === fromHash) ? fromHash : (fromStore && panels.some(p=>p.id===fromStore) ? fromStore : 'start');
+      showPanel(initial);
+
+      // Keyboard nav (ArrowLeft/Right/Home/End) and Space/Enter activation
+      document.addEventListener('keydown', (e)=>{
+        const keys = ['ArrowLeft','ArrowRight','Home','End'];
+        if(!keys.includes(e.key)) return;
+        const idx = buttons.findIndex(b => b.classList.contains('active'));
+        const last = buttons.length - 1;
+        let next = idx;
+        if(e.key === 'ArrowRight') next = (idx + 1) % buttons.length;
+        if(e.key === 'ArrowLeft') next = (idx - 1 + buttons.length) % buttons.length;
+        if(e.key === 'Home') next = 0;
+        if(e.key === 'End') next = last;
+        buttons[next].focus(); buttons[next].click();
+      });
+      buttons.forEach(btn => btn.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); btn.click(); }
+      }));
+
+      // Ship filter logic
+      const filterBtns = Array.from(document.querySelectorAll('.filter-btn'));
+      const shipCards = Array.from(document.querySelectorAll('.ship-card'));
+      function applyFilter(tag){
+        filterBtns.forEach(b => b.classList.toggle('active', b.dataset.filter === tag));
+        shipCards.forEach(card => {
+          if(tag === 'alle'){ card.hidden = false; return; }
+          const tags = (card.dataset.tags || '').split(',').map(t => t.trim());
+          card.hidden = !tags.includes(tag);
+        });
+        try { localStorage.setItem('ed_tips_shipfilter', tag); } catch(e){}
+      }
+      filterBtns.forEach(b => b.addEventListener('click', () => applyFilter(b.dataset.filter)));
+      const storeFilter = (()=>{ try { return localStorage.getItem('ed_tips_shipfilter'); } catch(e){ return null; } })();
+      if(storeFilter) applyFilter(storeFilter);
+    
+      // Logo toggle: show (w) 2025 by Beilrais, then back to default on next click
+      const logo = document.querySelector('.brand .logo');
+      const titleEl = document.querySelector('.brand h1');
+      if(logo && titleEl){
+        const defaultTitle = titleEl.textContent;
+        // Accessibility: make it a button
+        logo.setAttribute('role','button');
+        logo.setAttribute('tabindex','0');
+        logo.setAttribute('aria-pressed','false');
+        logo.setAttribute('aria-label','Titel umschalten');
+        const toggleTitle = () => {
+          const alt = !titleEl.classList.contains('is-alt');
+          titleEl.classList.toggle('is-alt', alt);
+          if(alt){
+            titleEl.dataset.original = defaultTitle;
+            titleEl.textContent = '(w) 2025 by Beilrais';
+            logo.classList.add('is-glow');
+            logo.setAttribute('aria-pressed','true');
+          } else {
+            titleEl.textContent = titleEl.dataset.original || defaultTitle;
+            logo.classList.remove('is-glow');
+            logo.setAttribute('aria-pressed','false');
+          }
+          // click flash
+          logo.classList.add('click-flash');
+          setTimeout(()=>logo.classList.remove('click-flash'), 350);
+        };
+        logo.addEventListener('click', toggleTitle);
+        logo.addEventListener('keydown', (e)=>{
+          if(e.key === 'Enter' || e.key === ' '){
+            e.preventDefault();
+            toggleTitle();
+          }
+        });
+      }
+})();
+  </script>
+</body>
+</html>
