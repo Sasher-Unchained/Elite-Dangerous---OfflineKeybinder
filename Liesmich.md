@@ -13,11 +13,14 @@ Letzter Fix:
 Sturkturierter Aufbau des Sheets.
 QOL mit verbesserten Reitern. 
 Es ist kein Webserver mehr nötig um Informationen von der API zu bekommen.
+Waren werden in der schnellwahl nun richtig angezeigt.
+Gesuche wird die Gewinnspanne in Prozent ermittelt.
+Im Reiter Route wird nach klicken des Gesuchs die gewünschten Details angezeigt.
 
 Bekannte Probleme:
 
 API Abhängig manche Preise sind "out of date"
-Waren werden nicht richtig angezeigt. 
+Waren werden nicht in deutscher Sprache angezeigt.
 
 __________________________________________________________________
 
